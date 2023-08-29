@@ -1,0 +1,29 @@
+# Rider specific files
+.idea/
+*.sln.DotSettings.user
+
+# Ignore NuGet packages
+*.nupkg
+packages/
+
+# Ignore user-specific files
+*.user
+*.suo
+*.sln.dotsettings.user
+
+# Ignore build artifacts
+*.dll
+*.exe
+*.pdb
+*.cache
+*.log
+
+# Ignore Visual Studio files
+.vs/
+/bin/
+/obj/
+
+# Ignore generated files in Lab_1Test directory
+Lab_1Test/bin/
+Lab_1Test/obj/
+

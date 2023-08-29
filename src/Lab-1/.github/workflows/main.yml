@@ -1,0 +1,41 @@
+name: .NET CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps: 
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '7.0'  # Use the correct version for your project
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Modify File Permissions
+      run: chmod +r ${{ github.workspace }}/Lab_1/Assets/InputGame.txt
+
+    - name: Set environment variable
+      run: echo "FILE_PATH=$(pwd)/Lab_1/Assets/InputGame.txt" >> $GITHUB_ENV
+    - name: Print environment variable
+      run: |
+       echo "FILE_PATH: ${{ env.FILE_PATH }}"
+
+      
+      # Set the file path based on your project structure
+    - name: Set environment variable
+      run: echo "FILE_PATH=${{ github.workspace }}/Lab_1/Assets/InputGame.txt" >> $GITHUB_ENV
+
+    - name: Run tests
+      run: |
+       export FILE_PATH=${{ env.FILE_PATH }}
+       dotnet test --no-restore --verbosity normal
