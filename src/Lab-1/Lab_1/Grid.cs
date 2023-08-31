@@ -15,9 +15,8 @@ public class Grid
         Height = field.GetLength(0); // nr of rows
         Width = field.GetLength(1);  // nr of columns
     }
-  
 
-    public int GetNextGenerationCellState(int[,]? field, Cell cell)
+    public int GetNextGenerationCellState(Cell cell)
     {
         // 1. Пройтись по соседним координатам: реактивный (V) и проактивный (агрессивный) метод.
 
@@ -34,13 +33,13 @@ public class Grid
         int numberOfLiveNeighbours = 0;
         foreach (var cellInNeighbour in neighbours)
         {
-            if (field[cellInNeighbour.X, cellInNeighbour.Y] == 1)
+            if (Field[cellInNeighbour.X, cellInNeighbour.Y] == 1)
             {
                 numberOfLiveNeighbours++;
             }  
         }
 
-        if (field[cell.X, cell.Y] == 1)
+        if (Field[cell.X, cell.Y] == 1)
         {
             numberOfLiveNeighbours--;
 
@@ -54,7 +53,7 @@ public class Grid
             }
         }
 
-        if (field[cell.X, cell.Y] == 0)
+        if (Field[cell.X, cell.Y] == 0)
         {
             if (numberOfLiveNeighbours == 3)
             {
@@ -91,7 +90,7 @@ public class Grid
         return cell;
     }
 
-    public int[,] GetNextGenerationField(int[,]? field)
+    public int[,] GetNextGenerationField()
     {
         int[,] newField = new int[Height, Width];
 
@@ -99,50 +98,49 @@ public class Grid
         {
             for (int j = 0; j < Width; j++)
             {
-                newField[i,j] = GetNextGenerationCellState(field, new Cell(i, j));
+                newField[i,j] = GetNextGenerationCellState(new Cell(i, j));
             }
         }
         return newField;
     }
     
-    public int[,] GetGivenGenerationField(int[,] field, int numOfGen)
+    public int[,] GetGivenGenerationField(int numOfGen)
     {
+        int[,] newField = new int[1,1];
         int count = 0;
         while (count < numOfGen)
         {
             // Call GetNextGenerationField with the current state of the field
-            field = GetNextGenerationField(field);
+            newField = GetNextGenerationField();
             count++;
         }
-        return field;
+        return newField;
     }
-    
-    
-    // This is a stub for your actual GetNextGenerationField implementation
-    // public int[,] GetNextGenerationField(int[,] field)
-    // {
-    //     int[,] newField = new int[field.GetLength(0), field.GetLength(1)];
-    //
-    //     // Your logic to populate newField based on field goes here...
-    //
-    //     return newField;
-    // }
-    
-    /*public int[,] GetGivenGenerationField(int[,] field, int numOfGen)
+    /// <summary>
+    /// Method to override the build-in Equals.
+    /// </summary>
+    public override bool Equals(object obj)
     {
-
-        int count = 0;
-        while (count < numOfGen)
+        if (!(obj is Grid otherGrid))
         {
-            // Call GetNextGenerationField with the current state of the field
-            int[,] nextField = GetNextGenerationField(field);
-            
-            // Update the current field to the new generation, create a copy of nextField and assign it to var field
-            field = (int[,]) nextField.Clone();
-
-            count++;
-
+            return false;
         }
-        return field;
-    }*/
+        if (this.Field.GetLength(0) != otherGrid.Field.GetLength(0) ||
+            this.Field.GetLength(1) != otherGrid.Field.GetLength(1))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < this.Field.GetLength(0); i++)
+        {
+            for (int j = 0; j < this.Field.GetLength(1); j++)
+            {
+                if (this.Field[i, j] != otherGrid.Field[i, j])
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

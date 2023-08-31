@@ -44,21 +44,25 @@ public class TranslatorTests
     {
         // Arrange
         Grid expectedField = originalGrid;
-     
+
         // Act
-        Grid actualField = new Grid(Translator.ReadFieldValues(filePath));
-        
+        int[,] rawGrid = Translator.ReadFieldValues(filePath);  // Assuming this method returns int[,]
+        Grid actualField = new Grid(rawGrid);
+
         // Assert
-        Assert.AreEqual(actualField, Is.EqualTo(expectedField));
+        Assert.That(expectedField, Is.EqualTo(actualField)); // This will only work if Grid has an overridden Equals method
     }
     
     [Test]
     public void GetNextGenerationCellState_ReturnsCorrectCell_Inside_3_2()
     {
+        // Arrange
+        Grid expectedField = originalGrid;
+        
         // Act
         Cell cell = new Cell(3, 2);
        
-        int resultCell = Grid.GetNextGenerationCellState(originalGrid, cell);
+        int resultCell = expectedField.GetNextGenerationCellState(cell);
         int expectedCell = 0;
         
         // Assert
@@ -69,15 +73,12 @@ public class TranslatorTests
     public void GetNextGenerationCellState_ReturnsCorrectCell_Inside_2_2()
     {
         // Arrange
-        string? filePath = "InputGameTest.txt";
-        
-        int[,]? originalField = Translator.ReadFieldValues(filePath);
+        Grid expectedField = originalGrid;
         
         // Act
-        Grid newGrid = new Grid(originalField);
         Cell cell = new Cell(2, 2);
        
-        int resultCell = newGrid.GetNextGenerationCellState(originalField, cell);
+        int resultCell = expectedField.GetNextGenerationCellState(cell);
         int expectedCell = 1;
         
         // Assert
@@ -89,76 +90,64 @@ public class TranslatorTests
      public void GetNextGenerationCellState_Fail_BorderCell_0_0()
      {
          // Arrange
-         string? filePath = "InputGameTest.txt";
-        
-         int[,]? originalField = Translator.ReadFieldValues(filePath);
+         Grid expectedField = originalGrid;
         
          // Act
-         Grid newGrid = new Grid(originalField);
          Cell cell = new Cell(0, 0);
        
-         int resultCell = newGrid.GetNextGenerationCellState(originalField, cell);
-         int expectedCell = 1;
+         int resultCell = expectedField.GetNextGenerationCellState(cell);
+         int expectedCell = 0;
         
          // Assert
-         Assert.That(resultCell, Is.Not.EqualTo(expected: expectedCell));
+         Assert.That(resultCell, Is.EqualTo(expectedCell));
      }
      
      [Test]
      public void GetNextGenerationCellState_Fail_BorderCell_0_7()
      {
          // Arrange
-         string? filePath = "InputGameTest.txt";
-        
-         int[,]? originalField = Translator.ReadFieldValues(filePath);
+         Grid expectedField = originalGrid;
         
          // Act
-         Grid newGrid = new Grid(originalField);
          Cell cell = new Cell(0, 7);
        
-         int resultCell = newGrid.GetNextGenerationCellState(originalField, cell);
-         int expectedCell = 1;
+         int resultCell = expectedField.GetNextGenerationCellState(cell);
+         int expectedCell = 0;
         
          // Assert
-         Assert.That(resultCell, Is.Not.EqualTo(expected: expectedCell));
+         Assert.That(resultCell, Is.EqualTo(expectedCell));
      }
      
      [Test]
      public void GetNextGenerationCellState_Fail_BorderCell_4_0()
      {
          // Arrange
-         string? filePath = "InputGameTest.txt";
-        
-         int[,]? originalField = Translator.ReadFieldValues(filePath);
+         Grid expectedField = originalGrid;
         
          // Act
-         Grid newGrid = new Grid(originalField);
          Cell cell = new Cell(4, 0);
        
-         int resultCell = newGrid.GetNextGenerationCellState(originalField, cell);
-         int expectedCell = 1;
+         int resultCell = expectedField.GetNextGenerationCellState(cell);
+         int expectedCell = 0;
         
          // Assert
-         Assert.That(resultCell, Is.Not.EqualTo(expected: expectedCell));
+         Assert.That(resultCell, Is.EqualTo(expectedCell));
      }
      
      [Test]
      public void GetNextGenerationCellState_Fail_BorderCell_4_7()
      {
          // Arrange
-         string? filePath = "InputGameTest.txt";
-        
-         int[,]? originalField = Translator.ReadFieldValues(filePath);
+         Grid expectedField = originalGrid;
         
          // Act
-         Grid newGrid = new Grid(originalField);
          Cell cell = new Cell(4, 7);
        
-         int resultCell = newGrid.GetNextGenerationCellState(originalField, cell);
-         int expectedCell = 1;
+         int resultCell = expectedField.GetNextGenerationCellState(cell);
+         int expectedCell = 0;
         
          // Assert
-         Assert.That(resultCell, Is.Not.EqualTo(expected: expectedCell));
+         Assert.That(resultCell, Is.EqualTo(expectedCell));
      }
 
      [Test]
@@ -167,11 +156,6 @@ public class TranslatorTests
      public void GetNextGenerationField_ReturnsCorrect()
      {
          // Arrange
-         // Create a test file with several fields.
-         string? filePath = "InputGameTest.txt";
-
-         int[,]? originalField = Translator.ReadFieldValues(filePath);
-         
          int[,] expectedField = 
          {
              { 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -182,9 +166,8 @@ public class TranslatorTests
          };
          
          // Act
-         Grid newGrid = new Grid(originalField);
          
-         int[,]? resultField = newGrid.GetNextGenerationField(originalField);
+         int[,]? resultField = originalGrid.GetNextGenerationField();
          
          // Assert
          Assert.That(resultField, Is.EqualTo(expectedField));
