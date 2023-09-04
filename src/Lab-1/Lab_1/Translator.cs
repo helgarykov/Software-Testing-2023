@@ -1,21 +1,22 @@
 namespace Lab_1;
 
+/// <summary>
+/// Class Translator for reading a txt-file, placed in the Lab_1 folder.
+/// Method ReadFieldValues() translates a string into a a 2D-array.
+/// Method CharParse() converts chars from the txt-file into 0s or 1s. 
+/// </summary>
 public static class Translator
 {
-    private static string filePath { get; }
+    private static string FilePath { get; }
 
     static Translator()
     {
-        filePath = Directory.GetCurrentDirectory();
-        filePath = (Directory.GetParent(filePath)).ToString();
-        filePath = (Directory.GetParent(filePath)).ToString();
+        FilePath = Directory.GetCurrentDirectory();
+        FilePath = Directory.GetParent(FilePath)!.ToString();
+        FilePath = Directory.GetParent(FilePath)!.ToString();
     
-        Console.WriteLine(Directory.GetParent(filePath));
+        Console.WriteLine(Directory.GetParent(FilePath));
     }
-    // Check if file exists
-  
-    
-    
     
     public static int[,]? ReadFieldValues(string? filePath)
     {

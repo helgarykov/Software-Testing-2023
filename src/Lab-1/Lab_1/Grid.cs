@@ -2,17 +2,16 @@ namespace Lab_1;
 
 public class Grid 
 {
-    
-    public int[,]? Field { get; }
-    public int Width { get; set; }
-    public int Height { get; set; }
+    private int[,]? Field { get; }
+    private int Width { get; set; }
+    private int Height { get; set; }
 
     
     
     public Grid (int[,]? field)
     {
         Field = field;
-        Height = field.GetLength(0); // nr of rows
+        Height = field!.GetLength(0); // nr of rows
         Width = field.GetLength(1);  // nr of columns
     }
 
@@ -33,13 +32,13 @@ public class Grid
         int numberOfLiveNeighbours = 0;
         foreach (var cellInNeighbour in neighbours)
         {
-            if (Field[cellInNeighbour.X, cellInNeighbour.Y] == 1)
+            if (Field![cellInNeighbour.X, cellInNeighbour.Y] == 1)
             {
                 numberOfLiveNeighbours++;
             }  
         }
 
-        if (Field[cell.X, cell.Y] == 1)
+        if (Field![cell.X, cell.Y] == 1)
         {
             numberOfLiveNeighbours--;
 
@@ -47,10 +46,8 @@ public class Grid
             {
                 return 1;
             }
-            else
-            {
-                return 0;
-            }
+
+            return 0;
         }
 
         if (Field[cell.X, cell.Y] == 0)
@@ -59,14 +56,18 @@ public class Grid
             {
                 return 1;
             }
-            else
-            {
-                return 0;
-            }
+
+            return 0;
         }
         return 0;
     }
-
+    
+    /// <summary>
+    /// A helper method called by GetNextGenerationCellState().
+    /// Handles cases placed on the borders of the field.
+    /// </summary>
+    /// <param name="cell"></param>
+    /// <returns></returns>
     
     private Cell GetNeighbourSpecialCase(Cell cell)
     {
@@ -117,7 +118,10 @@ public class Grid
         return newField;
     }
     /// <summary>
-    /// Method to override the build-in Equals.
+    /// Determines whether the specified object is equal to the current object.
+    /// Overrides the build-in Equals(). To be done: Add override GetHashCode().
+    /// <param name="obj">The object to compare its contents with the contents of the current object.</param>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     /// </summary>
     public override bool Equals(object obj)
     {
@@ -125,17 +129,16 @@ public class Grid
         {
             return false;
         }
-        if (this.Field.GetLength(0) != otherGrid.Field.GetLength(0) ||
-            this.Field.GetLength(1) != otherGrid.Field.GetLength(1))
+        if (!(Height == otherGrid.Height || Width == otherGrid.Width))
         {
             return false;
         }
 
-        for (int i = 0; i < this.Field.GetLength(0); i++)
+        for (int i = 0; i < Height; i++)
         {
-            for (int j = 0; j < this.Field.GetLength(1); j++)
+            for (int j = 0; j < Width; j++)
             {
-                if (this.Field[i, j] != otherGrid.Field[i, j])
+                if (Field![i, j] != otherGrid.Field![i, j])
                 {
                     return false;
                 }
@@ -144,3 +147,6 @@ public class Grid
         return true;
     }
 }
+
+/// Comment on if-statements: use if-st with cases of different nature;
+/// interrelated variants are to be handled by if-elseif-else statements.
