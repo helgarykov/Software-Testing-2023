@@ -13,7 +13,7 @@ public class LifeGameTestsOneTxt
     public LifeGameTestsOneTxt()
     {
         string basePath = TestContext.CurrentContext.TestDirectory;
-        Console.WriteLine("FilePath :" + basePath);
+        //Console.WriteLine("FilePath :" + basePath);
         basePath = Directory.GetParent(basePath)!.ToString();
         basePath = Directory.GetParent(basePath)!.ToString();
         basePath = Directory.GetParent(basePath)!.ToString();
