@@ -11,8 +11,8 @@ public abstract class Program
         filePath = Directory.GetParent(filePath)!.ToString();
         filePath += "/InputGame.txt";
         
-        int[,]? fieldFromTXT = Translator.ReadFieldValues(filePath);
-        Grid gridToPrint = new Grid(fieldFromTXT);
+        int[,]? fieldFromTxt = Translator.ReadFieldValues(filePath);
+        Grid gridToPrint = new Grid(fieldFromTxt);
         int[,] fieldToPrint = gridToPrint.GetGivenGenerationField(3);
         Translator.PrintField(fieldToPrint);
     }

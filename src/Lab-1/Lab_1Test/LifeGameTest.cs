@@ -4,22 +4,26 @@ namespace Lab_1Test;
 
 /// <summary>
 /// Class LifeGameTests for testing the functions of Grid and Translator.
-/// It tests InputGameTest.txt located in teh Lab_1Test folder.
+/// It tests only ONE! InputGameTest1.txt located in teh Lab_1Test/InputsTest folder.
 /// </summary>
-public class LifeGameTests
+public class LifeGameTestsOneTxt
 {
     private readonly Grid _originalGrid;
     private readonly string _filePath;
-    
- 
-    public LifeGameTests()
+    public LifeGameTestsOneTxt()
     {
-        _filePath = Directory.GetCurrentDirectory();
-        _filePath = Directory.GetParent(_filePath)!.ToString();
-        _filePath = Directory.GetParent(_filePath)!.ToString();
-        _filePath = Directory.GetParent(_filePath)!.ToString();
-        _filePath += "/InputGameTest.txt";
-
+        string basePath = TestContext.CurrentContext.TestDirectory;
+        Console.WriteLine("FilePath :" + basePath);
+        basePath = Directory.GetParent(basePath)!.ToString();
+        basePath = Directory.GetParent(basePath)!.ToString();
+        basePath = Directory.GetParent(basePath)!.ToString();
+        basePath = Directory.GetParent(basePath)!.ToString();
+        string relativePath = "Lab_1Test/InputsTest"; // Set the relative path to InputsTest directory
+         _filePath = Path.Combine(basePath, relativePath);
+        _filePath += "/InputGameTest1.txt";
+        
+        // Console.WriteLine("FilePath :" + _filePath);
+        
         _originalGrid = new Grid(new int[,]
         {
             {0, 1, 0, 0, 0, 0, 1, 0},

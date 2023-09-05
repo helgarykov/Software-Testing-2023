@@ -2,9 +2,9 @@ namespace Lab_1;
 
 public class Grid 
 {
-    private int[,]? Field { get; }
-    private int Width { get; set; }
-    private int Height { get; set; }
+    public int[,]? Field { get; }
+    private int Width { get; }
+    private int Height { get; }
 
     
     
@@ -12,7 +12,7 @@ public class Grid
     {
         Field = field;
         Height = field!.GetLength(0); // nr of rows
-        Width = field.GetLength(1);  // nr of columns
+        Width = field.GetLength(1);   // nr of columns
     }
 
     public int GetNextGenerationCellState(Cell cell)
@@ -126,6 +126,10 @@ public class Grid
     public override bool Equals(object obj)
     {
         if (!(obj is Grid otherGrid))
+        {
+            return false;
+        }
+        if (Field is null || otherGrid.Field is null)
         {
             return false;
         }

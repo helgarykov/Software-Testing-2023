@@ -1,23 +1,12 @@
 namespace Lab_1;
 
 /// <summary>
-/// Class Translator for reading a txt-file, placed in the Lab_1 folder.
+/// Class Translator for reading a txt-file, placed in the Lab_1 folder/Lab_1Test folder.
 /// Method ReadFieldValues() translates a string into a a 2D-array.
 /// Method CharParse() converts chars from the txt-file into 0s or 1s. 
 /// </summary>
 public static class Translator
 {
-    private static string FilePath { get; }
-
-    static Translator()
-    {
-        FilePath = Directory.GetCurrentDirectory();
-        FilePath = Directory.GetParent(FilePath)!.ToString();
-        FilePath = Directory.GetParent(FilePath)!.ToString();
-    
-        Console.WriteLine(Directory.GetParent(FilePath));
-    }
-    
     public static int[,]? ReadFieldValues(string? filePath)
     {
         // Check if file exists
@@ -41,7 +30,7 @@ public static class Translator
                     var fieldWidth = int.Parse(dimensions[1]);
         
                     // Create a 2D-array
-                    int[,]? field = new int[fieldHeight, fieldWidth];
+                    int[,] field = new int[fieldHeight, fieldWidth];
             
                     // Read the remaining lines into the 2D-array
                     for (int i = 2; i < lines.Length; i++)
@@ -61,7 +50,7 @@ public static class Translator
                             field[i - 2, j] = cellValue;
                         }
                     }
-                    return field;                             //return new[] { generationsCount, fieldWidth, fieldHight };
+                    return field;                             //return new[] { generationsCount, fieldWidth, fieldHeight };
                 }
                 Console.WriteLine("The second line must contain at least 2 numbers.");
             }
