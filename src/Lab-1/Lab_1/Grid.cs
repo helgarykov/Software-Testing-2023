@@ -1,8 +1,8 @@
 namespace Lab_1;
 
-public class Grid 
+public class Grid
 {
-    public int[,]? Field { get; }
+    public int[,]? Field { get; private set; }
     private int Width { get; }
     private int Height { get; }
 
@@ -15,7 +15,7 @@ public class Grid
         Width = field.GetLength(1);   // nr of columns
     }
 
-    public int GetNextGenerationCellState(Cell cell)
+    public static int GetNextGenerationCellState(Grid grid, Cell cell)
     {
         // 1. Пройтись по соседним координатам: реактивный (V) и проактивный (агрессивный) метод.
 
@@ -25,20 +25,20 @@ public class Grid
         {
             for (int j = cell.Y - 1; j <= cell.Y + 1; j++)
             {
-                neighbours.Add(GetNeighbourSpecialCase(new Cell(i, j)));
+                neighbours.Add(GetNeighbourSpecialCase(grid, new Cell(i, j)));
             }
         }
 
         int numberOfLiveNeighbours = 0;
         foreach (var cellInNeighbour in neighbours)
         {
-            if (Field![cellInNeighbour.X, cellInNeighbour.Y] == 1)
+            if (grid.Field![cellInNeighbour.X, cellInNeighbour.Y] == 1)
             {
                 numberOfLiveNeighbours++;
             }  
         }
 
-        if (Field![cell.X, cell.Y] == 1)
+        if (grid.Field![cell.X, cell.Y] == 1)
         {
             numberOfLiveNeighbours--;
 
@@ -50,7 +50,7 @@ public class Grid
             return 0;
         }
 
-        if (Field[cell.X, cell.Y] == 0)
+        if (grid.Field[cell.X, cell.Y] == 0)
         {
             if (numberOfLiveNeighbours == 3)
             {
@@ -69,53 +69,52 @@ public class Grid
     /// <param name="cell"></param>
     /// <returns></returns>
     
-    private Cell GetNeighbourSpecialCase(Cell cell)
+    private static Cell GetNeighbourSpecialCase(Grid grid, Cell cell)
     {
         if (cell.X < 0)
         {
-            cell.X = Height - 1;
+            cell.X = grid.Height - 1;
         }
 
-        else if (cell.X >= Height)
+        else if (cell.X >= grid.Height)
         {
-            cell.X = cell.X - Height;
+            cell.X = cell.X - grid.Height;
         }
         if (cell.Y < 0)
         {
-            cell.Y = Width - 1;
+            cell.Y = grid.Width - 1;
         }
-        else if (cell.Y >= Width)
+        else if (cell.Y >= grid.Width)
         {
-            cell.Y = cell.Y - Width;
+            cell.Y = cell.Y - grid.Width;
         }
         return cell;
     }
 
-    public int[,] GetNextGenerationField()
+    public static int[,] GetNextGenerationField(Grid grid)
     {
-        int[,] newField = new int[Height, Width];
+        int[,] newField = new int[grid.Height, grid.Width];
 
-        for (int i = 0; i < Height; i++)
+        for (int i = 0; i < grid.Height; i++)
         {
-            for (int j = 0; j < Width; j++)
+            for (int j = 0; j < grid.Width; j++)
             {
-                newField[i,j] = GetNextGenerationCellState(new Cell(i, j));
+                newField[i,j] = GetNextGenerationCellState(grid, new Cell(i, j));
             }
         }
         return newField;
     }
     
-    public int[,] GetGivenGenerationField(int numOfGen)
+    public static int[,] GetGivenGenerationField(Grid grid, int numOfGen)
     {
-        int[,] newField = new int[1,1];
         int count = 0;
         while (count < numOfGen)
         {
             // Call GetNextGenerationField with the current state of the field
-            newField = GetNextGenerationField();
+            grid.Field = GetNextGenerationField(grid);
             count++;
         }
-        return newField;
+        return grid.Field;
     }
     /// <summary>
     /// Determines whether the specified object is equal to the current object.

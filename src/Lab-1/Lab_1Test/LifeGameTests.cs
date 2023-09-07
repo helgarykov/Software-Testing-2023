@@ -39,13 +39,13 @@ public class LifeGameTests
             }),
             new Grid(new int[,]
             {
-                {0, 1, 1, 0, 0, 0, 0, 0},
-                {0, 1, 1, 0, 0, 0, 0, 0},
-                {0, 1, 1, 1, 0, 0, 0, 0},
-                {0, 1, 1, 0, 0, 0, 0, 0},
-                {0, 1, 1, 0, 0, 0, 0, 0}
+                {0, 0, 1, 0, 0, 0, 1, 0},
+                {0, 0, 1, 0, 0, 0, 1, 0},
+                {0, 0, 1, 0, 0, 0, 1, 0},
+                {0, 0, 1, 0, 0, 0, 1, 0},
+                {0, 0, 1, 0, 0, 0, 1, 0}
             }),
-            3
+            4
         );
 
         yield return new TestCaseData(
@@ -60,13 +60,13 @@ public class LifeGameTests
             }),
             new Grid(new int[,]
             {
-                { 0, 0, 0, 0, 0, 0, 1, 1 },
                 { 0, 0, 0, 0, 0, 0, 0, 0 },
-                { 0, 1, 1, 1, 0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0, 0, 0 },
                 { 0, 0, 0, 0, 0, 0, 0, 0 } 
             }),
-            3
+            2
         );
 
         yield return new TestCaseData(
@@ -81,11 +81,11 @@ public class LifeGameTests
             }),
             new Grid(new int[,]
             {
-                { 1, 0, 0, 0, 0, 0, 0, 1 },
+                { 0, 0, 1, 0, 0, 0, 0, 1 },
+                { 0, 0, 1, 0, 0, 0, 0, 1 },
                 { 0, 0, 0, 0, 0, 0, 0, 0 },
-                { 0, 1, 1, 1, 0, 0, 0, 0 },
                 { 0, 1, 0, 0, 0, 0, 0, 0 },
-                { 1, 0, 0, 0, 0, 0, 0, 1 } 
+                { 0, 1, 0, 0, 0, 0, 0, 1 } 
             }),
             3
         );
@@ -158,7 +158,7 @@ public class LifeGameTests
         Grid expectedField = initialGrid;
         
         // Act
-        int resultCell = expectedField.GetNextGenerationCellState(cell);
+        int resultCell = Grid.GetNextGenerationCellState(expectedField, cell);
         
         // Assert
         Assert.That(resultCell, Is.EqualTo(expectedCell));
@@ -171,7 +171,7 @@ public class LifeGameTests
         int[,]? expectedField = expectedNextGenGrid.Field;
         
         // Act
-        int[,] resultField = initialGrid.GetNextGenerationField();
+        int[,] resultField = Grid.GetNextGenerationField(initialGrid);
         
         // Assert
         Assert.That(expectedField, Is.EqualTo(resultField));
@@ -185,7 +185,7 @@ public class LifeGameTests
         int[,]? expectedField = expectedGivenGenGrid.Field;
         
         // Act
-        int[,] resultField = initialGrid.GetGivenGenerationField(numOfGen);
+        int[,] resultField = Grid.GetGivenGenerationField(initialGrid, numOfGen);
         
         // Assert
         Assert.That(expectedField, Is.EqualTo(resultField));

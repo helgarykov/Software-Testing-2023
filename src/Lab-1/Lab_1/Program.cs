@@ -13,7 +13,7 @@ public abstract class Program
         
         int[,]? fieldFromTxt = Translator.ReadFieldValues(filePath);
         Grid gridToPrint = new Grid(fieldFromTxt);
-        int[,] fieldToPrint = gridToPrint.GetGivenGenerationField(3);
+        int[,] fieldToPrint = Grid.GetGivenGenerationField(gridToPrint, 4);
         Translator.PrintField(fieldToPrint);
     }
 }
