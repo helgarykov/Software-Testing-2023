@@ -1,1 +1,1 @@
-Error: Invalid input: equality sign is missing.
+Error: Invalid input, equality sign is missing.

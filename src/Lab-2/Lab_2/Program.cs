@@ -14,7 +14,7 @@ public abstract class Program
             string?[] lines = File.ReadAllLines(filePath);
             if (lines.Length == 0)
             {
-                CalculatorState.ErrorMessageWriteToFile("File is empty.");
+                CalculatorState.ErrorMessageWriteToFile("No valid input. Add input to file.");
                 return null;
             }
             if (lines.Length > 1)
@@ -29,7 +29,7 @@ public abstract class Program
         {
             if (input == null)
             {
-                CalculatorState.ErrorMessageWriteToFile("No input to parse.");
+                CalculatorState.ErrorMessageWriteToFile("\n No input to parse.");
                 return Array.Empty<string>();  // Return an empty string array
             }
             return input!.Split(' ');
@@ -48,17 +48,13 @@ public abstract class Program
         outputFilePath = Directory.GetParent(outputFilePath)!.ToString();
         outputFilePath = Directory.GetParent(outputFilePath)!.ToString();
         outputFilePath += "/Output.txt";
-            
+        
         // This will clean the file
         File.WriteAllText(outputFilePath, string.Empty);
         
         string? inputFromFile = ReadInputFromFileOrReturnNull(filePath);
         string[] parsedInput = Parse(inputFromFile);
         CalculatorState.Calculate(parsedInput);
-        
-
-
-
     }
 }
 

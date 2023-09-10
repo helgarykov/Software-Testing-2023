@@ -1,16 +1,52 @@
 namespace Lab_2;
 
+/// <summary>
+/// Represents the state of a simplified keyboard calculator.
+/// 
+/// Calculator Keys:
+/// ● "0" ... "9" -- entering a digit
+/// ● "+", "-", "*", "/" -- performing arithmetic operations on integers
+/// ● "=" -- executing the operation
+/// 
+/// To simplify the task, we introduce the following limitations that are absent in a regular calculator:
+/// ● Calculations are performed on integers (int, not float, not double),
+/// ● The user can only enter a sequence of digits, then an operation, then digits again, then "=".
+///     Any other sequence of keys is prohibited.
+/// 
+/// Input Format:
+/// The input file contains the names of the keys pressed by the user. Key names are separated by a
+/// single space character.
+/// 
+/// Output Format:
+/// The output file contains one number — the result of the calculations, which is displayed on the screen.
+/// </summary>
 public class CalculatorState
 {
-    public int screen;
-    public int first_number;
-    public char op;
-    public bool start_new_number = true;
-    public CalculatorPhase LastPhaseReached { get; set; }
-    public CalculatorPhase currentPhase = CalculatorPhase.WaitingForFirstOperand;
-
-    public static void HandleKeyPress(CalculatorState calc, char key)
+    private int screen;
+    private int first_number;
+    private char op;
+    private bool start_new_number = true;
+    
+    /// <remarks>
+    /// This property is used to validate that the calculator reached the final phase of calculation, 
+    /// represented by <see cref="CalculatorPhase.WaitingForEqualsOperator"/>. If the calculator did
+    /// not reach this phase, an error message is written to indicate that the equality symbol '='
+    /// is missing in the input.
+    /// </remarks>
+    private CalculatorPhase LastPhaseReached { get; set; }
+    private CalculatorPhase currentPhase = CalculatorPhase.WaitingForFirstOperand;
+    
+    /// <summary>
+    /// HandleKeyPress method processes a keypress according to the current calculator phase.
+    /// </summary>
+    /// <param name="calc">An instance of the CalculatorState class.</param>
+    /// <param name="key">The key that was pressed.</param>
+    /// <remarks>
+    /// The <see cref="CalculatorPhase"/> of the CalculatorState determines how the key press is handled.
+    /// </remarks>
+    private static void HandleKeyPress(CalculatorState calc, char key)
 {
+    calc.LastPhaseReached = calc.currentPhase;  // Always update the last phase reached
     switch (calc.currentPhase)
     {
         case CalculatorPhase.WaitingForFirstOperand:
@@ -28,17 +64,11 @@ public class CalculatorState
                     calc.first_number += Int32.Parse(key.ToString());
                 }
             }
-            else if (key is '+' or '-' or '*' or '/')
-            {
-                // Transition to the next phase
-                calc.currentPhase = CalculatorPhase.WaitingForOperator;
-                calc.start_new_number = true; // prepare for a new number
-                HandleKeyPress(calc, key); // Recursively handle the key press
-            }
             else
             {
-                ErrorMessageWriteToFile("Expected a digit or operator.");
+                throw new InvalidOperationException($"Expected a digit, but was {key}.");
             }
+            calc.currentPhase = CalculatorPhase.WaitingForOperator;
             break;
 
         case CalculatorPhase.WaitingForOperator:
@@ -51,7 +81,7 @@ public class CalculatorState
             }
             else
             {
-                ErrorMessageWriteToFile("Expected an operator.");
+                throw new InvalidOperationException($"Expected an operator +, -, * or / but was {key}.");
             }
             break;
 
@@ -70,17 +100,12 @@ public class CalculatorState
                     calc.screen += Int32.Parse(key.ToString());
                 }
             }
-            else if (key == '=')
-            {
-                // Transition to the next phase
-                calc.currentPhase = CalculatorPhase.WaitingForEqualsOperator;
-                calc.LastPhaseReached = calc.currentPhase; 
-                HandleKeyPress(calc, key); // Recursively handle the key press
-            }
             else
             {
-                ErrorMessageWriteToFile("Expected a digit or '='.");
+                throw new InvalidOperationException($"Expected a digit, but was {key}.");
             }
+            // Transition to the next phase
+            calc.currentPhase = CalculatorPhase.WaitingForEqualsOperator;
             break;
 
         case CalculatorPhase.WaitingForEqualsOperator:
@@ -90,13 +115,10 @@ public class CalculatorState
                 int result = PerformCalculation(calc.first_number, calc.screen, calc.op);
                 calc.screen = result; // store result in screen
                 WriteResultToFile(result);
-                calc.currentPhase = CalculatorPhase.WaitingForFirstOperand; // reset to initial state
-                calc.LastPhaseReached = calc.currentPhase; 
-                calc.start_new_number = true; // prepare for a new number
             }
             else
             {
-                ErrorMessageWriteToFile("Expected '='.");
+                throw new InvalidOperationException($"Expected '=', but was {key}.");
             }
             break;
     }
@@ -123,66 +145,122 @@ public class CalculatorState
                 }
                 else
                 {
-                    ErrorMessageWriteToFile("Cannot divide by zero.");
+                    throw new InvalidOperationException("\n Cannot divide by zero.");
                 }
                 break;
         }
         return result;
     }
 
+    /// <summary>
+    /// Processes a sequence of keypresses to perform a calculator operation.
+    /// </summary>
+    /// <param name="input">An array of strings, each representing a keypress.</param>
+    /// <remarks>
+    /// The method takes a string array as input and processes each string one at a time,
+    /// treating it as a single keypress to a calculator.
+    /// 
+    /// The sequence of keypresses must adhere to the following:
+    /// - Only integers are supported.
+    /// - An operation consists of a sequence of digits, followed by an operator, then another sequence of digits, and finally the '=' sign.
+    /// 
+    /// Error messages are written to a file named "Output.txt" in case of invalid input.
+    /// </remarks>
+    /// <example>
+    /// This is how you would call the Calculate method:
+    /// <code>
+    /// string[] input = new string[] { "2", "5", "/", "5", "=" };
+    /// Calculate(input);
+    /// </code>
+    /// </example>
     public static void Calculate(string[] input)
     {
         CalculatorState calculator = new CalculatorState();
-        for (int i = 0; i < input.Length; i++)
-        {
-            string currentString = input[i];
-            if (string.IsNullOrEmpty(currentString))
-            {
-                continue;  // Skip empty strings
-            }
-            // If the current string contains more than one character, it's invalid
-            if (currentString.Length > 1)
-            {
-                Console.WriteLine($"Invalid input : {currentString}");
-                continue;  // Skip to the next iteration of the loop
-            }
-            char currentChar = currentString[0];
-            HandleKeyPress(calculator, currentChar);
-        }
-        if (calculator.LastPhaseReached != CalculatorPhase.WaitingForEqualsOperator)
-        {
-            ErrorMessageWriteToFile("Invalid input, equality sign is missing.");
-        }
-    }
-
-    private static void WriteResultToFile(int result)
-    {
         try
         {
-            string filePath = Directory.GetCurrentDirectory();
-            filePath = Directory.GetParent(filePath)!.ToString();
-            filePath = Directory.GetParent(filePath)!.ToString();
-            filePath = Directory.GetParent(filePath)!.ToString();
-            filePath += "/Output.txt";
-            
-            // This will write the result
-            File.WriteAllText(filePath, result.ToString());
+            for (int i = 0; i < input.Length; i++)
+            {
+                string currentString = input[i];
+                if (string.IsNullOrEmpty(currentString))
+                {
+                    continue; // Skip empty strings
+                }
+
+                // If the current string contains more than one character, it's invalid
+                if (currentString.Length > 1)
+                {
+                    ErrorMessageWriteToFile($"Invalid input : {currentString}. Separate digits by a space.");
+                    return; // Skip to the next iteration of the loop
+                }
+
+                char currentChar = currentString[0];
+                HandleKeyPress(calculator, currentChar);
+
+            }
+            // Check for missing "=" at the end of all inputs
+            if (calculator.LastPhaseReached != CalculatorPhase.WaitingForEqualsOperator)
+            {
+                ErrorMessageWriteToFile("Invalid input, equality sign is missing.");
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine("An error occured when writing to file: " + ex.Message);
+            ErrorMessageWriteToFile(ex.Message);
         }
     }
 
-    public static void ErrorMessageWriteToFile(string message)
-    {
-        string path = Directory.GetCurrentDirectory();
-        path = Directory.GetParent(path)!.ToString();
-        path = Directory.GetParent(path)!.ToString();
-        path = Directory.GetParent(path)!.ToString();
-        path += "/Output.txt";
-        File.AppendAllText(path, $"Error: {message}\n");
-    }
+    /// <summary>
+        /// Writes the calculation result to a file.
+        /// </summary>
+        /// <param name="result">The result of the calculation to be written to the file.</param>
+        /// <remarks>
+        /// This method overwrites the contents of a file named "Output.txt" located in Lab_2 directory 
+        /// with the provided integer result.
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when the method fails to write to the file.</exception>
+        private static void WriteResultToFile(int result)
+        {
+            try
+            {
+                string filePath = Directory.GetCurrentDirectory();
+                filePath = Directory.GetParent(filePath)!.ToString();
+                filePath = Directory.GetParent(filePath)!.ToString();
+                filePath = Directory.GetParent(filePath)!.ToString();
+                filePath += "/Output.txt";
+            
+                // This will write the result
+                File.WriteAllText(filePath, result.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("\nAn error occured when writing to file: " + ex.Message);
+            }
+        }
+    
+        /// <summary>
+        /// Writes an error message to a file.
+        /// </summary>
+        /// <param name="message">The error message to write.</param>
+        /// <remarks>
+        /// This method appends the error message to a file named "Output.txt" located in Lab_2 directory.
+        /// If the method fails to write the message, it prints an error to the console.
+        /// </remarks>
+        /// <exception cref="Exception">Thrown when the method fails to write to the file.</exception>
+        public static void ErrorMessageWriteToFile(string message)
+        {
+            try
+            {   string path = Directory.GetCurrentDirectory();
+                path = Directory.GetParent(path)!.ToString();
+                path = Directory.GetParent(path)!.ToString();
+                path = Directory.GetParent(path)!.ToString();
+                path += "/Output.txt";
+                File.AppendAllText(path, $"Error: {message}\n");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Could not write to file: {ex.Message}");
+            }
+        }
 }
 
 
