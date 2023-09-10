@@ -44,86 +44,95 @@ public class CalculatorState
     /// <remarks>
     /// The <see cref="CalculatorPhase"/> of the CalculatorState determines how the key press is handled.
     /// </remarks>
-    private static void HandleKeyPress(CalculatorState calc, char key)
-{
-    calc.LastPhaseReached = calc.currentPhase;  // Always update the last phase reached
-    switch (calc.currentPhase)
+        private static void HandleKeyPress(CalculatorState calc, char key)
     {
-        case CalculatorPhase.WaitingForFirstOperand:
-            if (char.IsDigit(key))
-            {
-                // Process first operand, build up the number
-                if (calc.start_new_number)
+        calc.LastPhaseReached = calc.currentPhase;  // Always update the last phase reached
+        switch (calc.currentPhase)
+        {
+            case CalculatorPhase.WaitingForFirstOperand:
+                if (char.IsDigit(key))
                 {
-                    calc.first_number = Int32.Parse(key.ToString());
-                    calc.start_new_number = false;
+                    // Process first operand, build up the number
+                    if (calc.start_new_number)
+                    {
+                        calc.first_number = Int32.Parse(key.ToString());
+                        calc.start_new_number = false;
+                    }
+                    else
+                    {
+                        calc.first_number *= 10;
+                        calc.first_number += Int32.Parse(key.ToString());
+                    }
                 }
                 else
                 {
-                    calc.first_number *= 10;
-                    calc.first_number += Int32.Parse(key.ToString());
+                    throw new InvalidOperationException($"Expected a digit, but was {key}.");
                 }
-            }
-            else
-            {
-                throw new InvalidOperationException($"Expected a digit, but was {key}.");
-            }
-            calc.currentPhase = CalculatorPhase.WaitingForOperator;
-            break;
+                calc.currentPhase = CalculatorPhase.WaitingForOperator;
+                break;
 
-        case CalculatorPhase.WaitingForOperator:
-            if (key is '+' or '-' or '*' or '/')
-            {
-                // Process operator
-                calc.op = key;
-                calc.currentPhase = CalculatorPhase.WaitingForSecondOperand;
-                calc.start_new_number = true; // prepare for a new number
-            }
-            else
-            {
-                throw new InvalidOperationException($"Expected an operator +, -, * or / but was {key}.");
-            }
-            break;
-
-        case CalculatorPhase.WaitingForSecondOperand:
-            if (char.IsDigit(key))
-            {
-                // Process second operand, build up the number
-                if (calc.start_new_number)
+            case CalculatorPhase.WaitingForOperator:
+                if (key is '+' or '-' or '*' or '/')
                 {
-                    calc.screen = Int32.Parse(key.ToString());
-                    calc.start_new_number = false;
+                    // Process operator
+                    calc.op = key;
+                    calc.currentPhase = CalculatorPhase.WaitingForSecondOperand;
+                    calc.start_new_number = true; // prepare for a new number
                 }
                 else
                 {
-                    calc.screen *= 10;
-                    calc.screen += Int32.Parse(key.ToString());
+                    throw new InvalidOperationException($"Expected an operator +, -, * or / but was {key}.");
                 }
-            }
-            else
-            {
-                throw new InvalidOperationException($"Expected a digit, but was {key}.");
-            }
-            // Transition to the next phase
-            calc.currentPhase = CalculatorPhase.WaitingForEqualsOperator;
-            break;
+                break;
 
-        case CalculatorPhase.WaitingForEqualsOperator:
-            if (key == '=')
-            {
-                // Perform calculation
-                int result = PerformCalculation(calc.first_number, calc.screen, calc.op);
-                calc.screen = result; // store result in screen
-                WriteResultToFile(result);
-            }
-            else
-            {
-                throw new InvalidOperationException($"Expected '=', but was {key}.");
-            }
-            break;
+            case CalculatorPhase.WaitingForSecondOperand:
+                if (char.IsDigit(key))
+                {
+                    // Process second operand, build up the number
+                    if (calc.start_new_number)
+                    {
+                        calc.screen = Int32.Parse(key.ToString());
+                        calc.start_new_number = false;
+                    }
+                    else
+                    {
+                        calc.screen *= 10;
+                        calc.screen += Int32.Parse(key.ToString());
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Expected a digit, but was {key}.");
+                }
+                // Transition to the next phase
+                calc.currentPhase = CalculatorPhase.WaitingForEqualsOperator;
+                break;
+
+            case CalculatorPhase.WaitingForEqualsOperator:
+                if (key == '=')
+                {
+                    // Perform calculation
+                    int result = PerformCalculation(calc.first_number, calc.screen, calc.op);
+                    calc.screen = result; // store result in screen
+                    WriteResultToFile(result);
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Expected '=', but was {key}.");
+                }
+                break;
+        }
     }
-}
-
+    
+    
+    /// <summary>
+    /// Performs a basic calculation based on two operands and an operator.
+    /// </summary>
+    /// <param name="first">The first operand.</param>
+    /// <param name="second">The second operand.</param>
+    /// <param name="op">The operator to use for the calculation.</param>
+    /// <returns>The result of the calculation.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when division by zero is attempted.</exception>
     private static int PerformCalculation(int first, int second, char op)
     {
         int result = 0;
