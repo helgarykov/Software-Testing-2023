@@ -273,6 +273,21 @@ public class CalculatorState
 }
 
 
+
+/*
+  ===============================================================================
+  BEGIN BLOCK OF COMMENTED CODE
+
+  Description:
+  The following code snippets were intended for the initial version of Calculator
+  that is not currently in use.
+
+  Last Updated: 2023-09-07
+  Author: Helga R. Ibsen
+  ===============================================================================
+*/
+
+
 /* Вариант с проверкой результата деления.
  1. Если ресультат целое число, то...
  2. Иначе, результат дробное число и применяется соответственная логика.
@@ -289,7 +304,7 @@ if (calc.screen != 0)
         result = calc.first_number / calc.screen;
     }
 
-// Предыдущая рабочая версия HandleKeyPress():
+//Предыдущая рабочая версия HandleKeyPress():
 private static void HandleKeyPress(CalculatorState calc, char key)
     {
         if (Char.IsNumber(key))
@@ -356,7 +371,7 @@ private static void HandleKeyPress(CalculatorState calc, char key)
             Console.WriteLine("Expected input should be an int.");
         }
         
-// Previous property op with a setter-method:
+//Previous property op with a setter-method:
 public class CalculatorState
 {
     private char _op;
@@ -377,3 +392,9 @@ public class CalculatorState
         }
     }
 }*/
+
+/*
+  ===============================================================================
+  END BLOCK OF COMMENTED CODE
+  ===============================================================================
+*/
