@@ -3,7 +3,7 @@ using Lab_2;
 
 public abstract class Program
 {
-        static string? ReadInputFromFileOrReturnNull(string filePath)
+        public static string? ReadInputFromFileOrReturnNull(string filePath)
         {
             // Check if file exists
             if (!File.Exists(filePath))
@@ -25,7 +25,7 @@ public abstract class Program
             return lines[0];
         }
     
-        static string[] Parse(string? input)
+        public static string[] Parse(string? input)
         {
             if (input == null)
             {

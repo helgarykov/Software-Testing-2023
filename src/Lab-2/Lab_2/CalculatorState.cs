@@ -44,7 +44,7 @@ public class CalculatorState
     /// <remarks>
     /// The <see cref="CalculatorPhase"/> of the CalculatorState determines how the key press is handled.
     /// </remarks>
-        private static void HandleKeyPress(CalculatorState calc, char key)
+    private static void HandleKeyPress(CalculatorState calc, char key)
     {
         calc.LastPhaseReached = calc.currentPhase;  // Always update the last phase reached
         switch (calc.currentPhase)
@@ -154,7 +154,7 @@ public class CalculatorState
                 }
                 else
                 {
-                    throw new InvalidOperationException("\n Cannot divide by zero.");
+                    throw new InvalidOperationException("Cannot divide by zero.");
                 }
                 break;
         }
@@ -286,7 +286,6 @@ public class CalculatorState
   Author: Helga R. Ibsen
   ===============================================================================
 */
-
 
 /* Вариант с проверкой результата деления.
  1. Если ресультат целое число, то...
