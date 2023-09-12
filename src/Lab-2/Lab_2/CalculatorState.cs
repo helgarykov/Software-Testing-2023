@@ -35,6 +35,12 @@ public class CalculatorState
     /// </remarks>
     private CalculatorPhase LastPhaseReached { get; set; }
     private CalculatorPhase currentPhase = CalculatorPhase.WaitingForFirstOperand;
+    private string outputFile;
+
+    // public CalculatorState(string outputFile)
+    // {
+    //     this.outputFile = outputFile;
+    // }
     
     /// <summary>
     /// HandleKeyPress method processes a keypress according to the current calculator phase.
@@ -50,75 +56,107 @@ public class CalculatorState
         switch (calc.currentPhase)
         {
             case CalculatorPhase.WaitingForFirstOperand:
-                if (char.IsDigit(key))
+                try
                 {
-                    // Process first operand, build up the number
-                    if (calc.start_new_number)
+                    if (char.IsDigit(key))
                     {
-                        calc.first_number = Int32.Parse(key.ToString());
-                        calc.start_new_number = false;
+                        // Process first operand, build up the number
+                        if (calc.start_new_number)
+                        {
+                            calc.first_number = Int32.Parse(key.ToString());
+                            calc.start_new_number = false;
+                        }
+                        else
+                        {
+                            calc.first_number *= 10;
+                            calc.first_number += Int32.Parse(key.ToString());
+                        }
                     }
                     else
                     {
-                        calc.first_number *= 10;
-                        calc.first_number += Int32.Parse(key.ToString());
+                        throw new InvalidOperationException($"Expected a digit, but was {key}.");
                     }
                 }
-                else
+                catch (InvalidOperationException ex)
                 {
-                    throw new InvalidOperationException($"Expected a digit, but was {key}.");
+                    ErrorMessageWriteToFile(ex.Message, calc.outputFile);
                 }
+
                 calc.currentPhase = CalculatorPhase.WaitingForOperator;
                 break;
 
             case CalculatorPhase.WaitingForOperator:
-                if (key is '+' or '-' or '*' or '/')
+                try
                 {
-                    // Process operator
-                    calc.op = key;
-                    calc.currentPhase = CalculatorPhase.WaitingForSecondOperand;
-                    calc.start_new_number = true; // prepare for a new number
-                }
-                else
-                {
-                    throw new InvalidOperationException($"Expected an operator +, -, * or / but was {key}.");
-                }
-                break;
-
-            case CalculatorPhase.WaitingForSecondOperand:
-                if (char.IsDigit(key))
-                {
-                    // Process second operand, build up the number
-                    if (calc.start_new_number)
+                    if (key is '+' or '-' or '*' or '/')
                     {
-                        calc.screen = Int32.Parse(key.ToString());
-                        calc.start_new_number = false;
+                        // Process operator
+                        calc.op = key;
+                        calc.currentPhase = CalculatorPhase.WaitingForSecondOperand;
+                        calc.start_new_number = true; // prepare for a new number
                     }
                     else
                     {
-                        calc.screen *= 10;
-                        calc.screen += Int32.Parse(key.ToString());
+                        throw new InvalidOperationException($"Expected an operator +, -, * or / but was {key}.");
                     }
                 }
-                else
+                catch (InvalidOperationException ex)
                 {
-                    throw new InvalidOperationException($"Expected a digit, but was {key}.");
+                    ErrorMessageWriteToFile(ex.Message, calc.outputFile);
                 }
+
+                break;
+
+            case CalculatorPhase.WaitingForSecondOperand:
+
+                try
+                {
+                    if (char.IsDigit(key))
+                    {
+                        // Process second operand, build up the number
+                        if (calc.start_new_number)
+                        {
+                            calc.screen = Int32.Parse(key.ToString());
+                            calc.start_new_number = false;
+                        }
+                        else
+                        {
+                            calc.screen *= 10;
+                            calc.screen += Int32.Parse(key.ToString());
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Expected a digit, but was {key}.");
+                    }
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ErrorMessageWriteToFile(ex.Message, calc.outputFile);
+                }
+
                 // Transition to the next phase
                 calc.currentPhase = CalculatorPhase.WaitingForEqualsOperator;
                 break;
 
             case CalculatorPhase.WaitingForEqualsOperator:
-                if (key == '=')
+                try
                 {
-                    // Perform calculation
-                    int result = PerformCalculation(calc.first_number, calc.screen, calc.op);
-                    calc.screen = result; // store result in screen
-                    WriteResultToFile(result);
+                    if (key == '=')
+                    {
+                        // Perform calculation
+                        int result = PerformCalculation(calc.first_number, calc.screen, calc.op, calc);
+                        calc.screen = result; // store result in screen
+                        WriteResultToFile(result, calc.outputFile);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Expected '=', but was {key}.");
+                    }
                 }
-                else
+                catch (InvalidOperationException ex)
                 {
-                    throw new InvalidOperationException($"Expected '=', but was {key}.");
+                    ErrorMessageWriteToFile(ex.Message, calc.outputFile);
                 }
                 break;
         }
@@ -133,7 +171,7 @@ public class CalculatorState
     /// <param name="op">The operator to use for the calculation.</param>
     /// <returns>The result of the calculation.</returns>
     /// <exception cref="InvalidOperationException">Thrown when division by zero is attempted.</exception>
-    private static int PerformCalculation(int first, int second, char op)
+    private static int PerformCalculation(int first, int second, char op, CalculatorState calc)
     {
         int result = 0;
         switch (op)
@@ -148,13 +186,23 @@ public class CalculatorState
                 result = first * second;
                 break;
             case '/':
-                if (second != 0)
+                try
                 {
+                    // Attempt to divide, which may throw an exception
+                    if (second == 0)
+                    {
+                        throw new InvalidOperationException("Cannot divide by zero.");
+                    }
                     result = first / second;
                 }
-                else
+                catch (InvalidOperationException ex)
                 {
-                    throw new InvalidOperationException("Cannot divide by zero.");
+                    ErrorMessageWriteToFile(ex.Message, calc.outputFile);
+                    throw;  // re-throw the exception
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessageWriteToFile(ex.Message, calc.outputFile);    // Optionally re-throw or handle other types of exceptions
                 }
                 break;
         }
@@ -182,7 +230,7 @@ public class CalculatorState
     /// Calculate(input);
     /// </code>
     /// </example>
-    public static void Calculate(string[] input)
+    public static void Calculate(string[] input, string outputFile)
     {
         CalculatorState calculator = new CalculatorState();
         try
@@ -198,7 +246,7 @@ public class CalculatorState
                 // If the current string contains more than one character, it's invalid
                 if (currentString.Length > 1)
                 {
-                    ErrorMessageWriteToFile($"Invalid input : {currentString}. Separate digits by a space.");
+                    ErrorMessageWriteToFile($"Invalid input : {currentString}. Separate digits by a space.", calculator.outputFile);
                     return; // Skip to the next iteration of the loop
                 }
 
@@ -209,12 +257,12 @@ public class CalculatorState
             // Check for missing "=" at the end of all inputs
             if (calculator.LastPhaseReached != CalculatorPhase.WaitingForEqualsOperator)
             {
-                ErrorMessageWriteToFile("Invalid input, equality sign is missing.");
+                ErrorMessageWriteToFile("Invalid input, equality sign is missing.", calculator.outputFile);
             }
         }
         catch (Exception ex)
         {
-            ErrorMessageWriteToFile(ex.Message);
+            ErrorMessageWriteToFile(ex.Message, calculator.outputFile);
         }
     }
 
@@ -227,18 +275,18 @@ public class CalculatorState
         /// with the provided integer result.
         /// </remarks>
         /// <exception cref="Exception">Thrown when the method fails to write to the file.</exception>
-        private static void WriteResultToFile(int result)
+        private static void WriteResultToFile(int result, string outputFile)
         {
             try
             {
-                string filePath = Directory.GetCurrentDirectory();
-                filePath = Directory.GetParent(filePath)!.ToString();
-                filePath = Directory.GetParent(filePath)!.ToString();
-                filePath = Directory.GetParent(filePath)!.ToString();
-                filePath += "/Output.txt";
+                // string filePath = Directory.GetCurrentDirectory();
+                // filePath = Directory.GetParent(filePath)!.ToString();
+                // filePath = Directory.GetParent(filePath)!.ToString();
+                // filePath = Directory.GetParent(filePath)!.ToString();
+                // filePath += "/Output.txt";
             
                 // This will write the result
-                File.WriteAllText(filePath, result.ToString());
+                File.WriteAllText(outputFile, result.ToString());
             }
             catch (Exception ex)
             {
@@ -255,15 +303,15 @@ public class CalculatorState
         /// If the method fails to write the message, it prints an error to the console.
         /// </remarks>
         /// <exception cref="Exception">Thrown when the method fails to write to the file.</exception>
-        public static void ErrorMessageWriteToFile(string message)
+        public static void ErrorMessageWriteToFile(string message, string outputFile)
         {
             try
-            {   string path = Directory.GetCurrentDirectory();
+            {   /*string path = Directory.GetCurrentDirectory();
                 path = Directory.GetParent(path)!.ToString();
                 path = Directory.GetParent(path)!.ToString();
                 path = Directory.GetParent(path)!.ToString();
-                path += "/Output.txt";
-                File.AppendAllText(path, $"Error: {message}\n");
+                path += "/Output.txt";*/
+                File.AppendAllText(outputFile, $"Error: {message}\n");
             }
             catch(Exception ex)
             {

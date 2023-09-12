@@ -1,1 +1,2 @@
 Error: Expected a digit, but was a.
+Error: Invalid input, equality sign is missing.
