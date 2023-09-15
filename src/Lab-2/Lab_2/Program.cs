@@ -54,7 +54,8 @@ public abstract class Program
         
         string? inputFromFile = ReadInputFromFileOrReturnNull(filePath, outputFilePath);
         string[] parsedInput = Parse(inputFromFile, outputFilePath);
-        CalculatorState.Calculate(parsedInput, outputFilePath);
+        CalculatorState calculate = new CalculatorState(outputFilePath);
+        calculate.Calculate(parsedInput);
     }
 }
 

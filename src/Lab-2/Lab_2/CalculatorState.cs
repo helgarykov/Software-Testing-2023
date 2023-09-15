@@ -26,6 +26,7 @@ public class CalculatorState
     private int first_number;
     private char op;
     private bool start_new_number = true;
+    public bool HasErrorOccurred { get; set; } = false;
     
     /// <remarks>
     /// This property is used to validate that the calculator reached the final phase of calculation, 
@@ -35,12 +36,11 @@ public class CalculatorState
     /// </remarks>
     private CalculatorPhase LastPhaseReached { get; set; }
     private CalculatorPhase currentPhase = CalculatorPhase.WaitingForFirstOperand;
-    private string outputFile;
-
-    // public CalculatorState(string outputFile)
-    // {
-    //     this.outputFile = outputFile;
-    // }
+    public string OutputFile { get;}
+    public CalculatorState(string outputFile)
+    {
+        OutputFile = outputFile;
+    }
     
     /// <summary>
     /// HandleKeyPress method processes a keypress according to the current calculator phase.
@@ -74,12 +74,15 @@ public class CalculatorState
                     }
                     else
                     {
-                        throw new InvalidOperationException($"Expected a digit, but was {key}.");
+                        throw new InvalidOperationException("Expected a digit, but was " + key);
+
                     }
                 }
                 catch (InvalidOperationException ex)
                 {
-                    ErrorMessageWriteToFile(ex.Message, calc.outputFile);
+                    ErrorMessageWriteToFile(ex.Message, calc.OutputFile);
+                    calc.HasErrorOccurred = true; 
+                    return;
                 }
 
                 calc.currentPhase = CalculatorPhase.WaitingForOperator;
@@ -97,14 +100,14 @@ public class CalculatorState
                     }
                     else
                     {
-                        throw new InvalidOperationException($"Expected an operator +, -, * or / but was {key}.");
+                        throw new InvalidOperationException("Expected an operator +, -, * or / but was " + key);
                     }
                 }
                 catch (InvalidOperationException ex)
                 {
-                    ErrorMessageWriteToFile(ex.Message, calc.outputFile);
+                    ErrorMessageWriteToFile(ex.Message, calc.OutputFile);
+                    calc.HasErrorOccurred = true;
                 }
-
                 break;
 
             case CalculatorPhase.WaitingForSecondOperand:
@@ -127,12 +130,14 @@ public class CalculatorState
                     }
                     else
                     {
-                        throw new InvalidOperationException($"Expected a digit, but was {key}.");
+                        throw new InvalidOperationException($"Expected a digit, but was " + key);
                     }
                 }
                 catch (InvalidOperationException ex)
                 {
-                    ErrorMessageWriteToFile(ex.Message, calc.outputFile);
+                    ErrorMessageWriteToFile(ex.Message, calc.OutputFile);
+                    calc.HasErrorOccurred = true;
+                    return;
                 }
 
                 // Transition to the next phase
@@ -147,16 +152,17 @@ public class CalculatorState
                         // Perform calculation
                         int result = PerformCalculation(calc.first_number, calc.screen, calc.op, calc);
                         calc.screen = result; // store result in screen
-                        WriteResultToFile(result, calc.outputFile);
+                        WriteResultToFile(result, calc.OutputFile);
                     }
                     else
                     {
-                        throw new InvalidOperationException($"Expected '=', but was {key}.");
+                        throw new InvalidOperationException("Expected '=', but was " + key);
                     }
                 }
                 catch (InvalidOperationException ex)
                 {
-                    ErrorMessageWriteToFile(ex.Message, calc.outputFile);
+                    ErrorMessageWriteToFile(ex.Message, calc.OutputFile);
+                    calc.HasErrorOccurred = true; 
                 }
                 break;
         }
@@ -197,12 +203,12 @@ public class CalculatorState
                 }
                 catch (InvalidOperationException ex)
                 {
-                    ErrorMessageWriteToFile(ex.Message, calc.outputFile);
+                    ErrorMessageWriteToFile(ex.Message, calc.OutputFile);
                     throw;  // re-throw the exception
                 }
                 catch (Exception ex)
                 {
-                    ErrorMessageWriteToFile(ex.Message, calc.outputFile);    // Optionally re-throw or handle other types of exceptions
+                    ErrorMessageWriteToFile(ex.Message, calc.OutputFile);    // Optionally re-throw or handle other types of exceptions
                 }
                 break;
         }
@@ -230,11 +236,11 @@ public class CalculatorState
     /// Calculate(input);
     /// </code>
     /// </example>
-    public static void Calculate(string[] input, string outputFile)
+    public void Calculate(string[] input)
     {
-        CalculatorState calculator = new CalculatorState();
         try
         {
+
             for (int i = 0; i < input.Length; i++)
             {
                 string currentString = input[i];
@@ -246,46 +252,45 @@ public class CalculatorState
                 // If the current string contains more than one character, it's invalid
                 if (currentString.Length > 1)
                 {
-                    ErrorMessageWriteToFile($"Invalid input : {currentString}. Separate digits by a space.", calculator.outputFile);
+                    ErrorMessageWriteToFile($"Invalid input : {currentString}. Separate digits by a space.", OutputFile);
                     return; // Skip to the next iteration of the loop
                 }
 
                 char currentChar = currentString[0];
-                HandleKeyPress(calculator, currentChar);
+                HandleKeyPress(this, currentChar);
+                if (this.HasErrorOccurred)
+                {
+                    return;
+                }
 
             }
             // Check for missing "=" at the end of all inputs
-            if (calculator.LastPhaseReached != CalculatorPhase.WaitingForEqualsOperator)
+            if (LastPhaseReached != CalculatorPhase.WaitingForEqualsOperator)
             {
-                ErrorMessageWriteToFile("Invalid input, equality sign is missing.", calculator.outputFile);
+                ErrorMessageWriteToFile("Invalid input, equality sign is missing.", OutputFile);
             }
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
-            ErrorMessageWriteToFile(ex.Message, calculator.outputFile);
+            // Log ex.Message as well as any other information that might help you debug the issue
+            ErrorMessageWriteToFile(ex.Message, OutputFile);
         }
     }
 
     /// <summary>
-        /// Writes the calculation result to a file.
-        /// </summary>
-        /// <param name="result">The result of the calculation to be written to the file.</param>
-        /// <remarks>
-        /// This method overwrites the contents of a file named "Output.txt" located in Lab_2 directory 
-        /// with the provided integer result.
-        /// </remarks>
-        /// <exception cref="Exception">Thrown when the method fails to write to the file.</exception>
-        private static void WriteResultToFile(int result, string outputFile)
+    /// Writes the calculation result to a file.
+    /// </summary>
+    /// <param name="result">The result of the calculation to be written to the file.</param>
+    /// <param name="outputFile"></param>
+    /// <remarks>
+    /// This method overwrites the contents of a file named "Output.txt" located in Lab_2 directory 
+    /// with the provided integer result.
+    /// </remarks>
+    /// <exception cref="Exception">Thrown when the method fails to write to the file.</exception>
+    private static void WriteResultToFile(int result, string outputFile)
         {
             try
             {
-                // string filePath = Directory.GetCurrentDirectory();
-                // filePath = Directory.GetParent(filePath)!.ToString();
-                // filePath = Directory.GetParent(filePath)!.ToString();
-                // filePath = Directory.GetParent(filePath)!.ToString();
-                // filePath += "/Output.txt";
-            
-                // This will write the result
                 File.WriteAllText(outputFile, result.ToString());
             }
             catch (Exception ex)
@@ -293,24 +298,21 @@ public class CalculatorState
                 Console.WriteLine("\nAn error occured when writing to file: " + ex.Message);
             }
         }
-    
-        /// <summary>
-        /// Writes an error message to a file.
-        /// </summary>
-        /// <param name="message">The error message to write.</param>
-        /// <remarks>
-        /// This method appends the error message to a file named "Output.txt" located in Lab_2 directory.
-        /// If the method fails to write the message, it prints an error to the console.
-        /// </remarks>
-        /// <exception cref="Exception">Thrown when the method fails to write to the file.</exception>
-        public static void ErrorMessageWriteToFile(string message, string outputFile)
+
+    /// <summary>
+    /// Writes an error message to a file.
+    /// </summary>
+    /// <param name="message">The error message to write.</param>
+    /// <param name="outputFile"></param>
+    /// <remarks>
+    /// This method appends the error message to a file named "Output.txt" located in Lab_2 directory.
+    /// If the method fails to write the message, it prints an error to the console.
+    /// </remarks>
+    /// <exception cref="Exception">Thrown when the method fails to write to the file.</exception>
+    public static void ErrorMessageWriteToFile(string message, string outputFile)
         {
             try
-            {   /*string path = Directory.GetCurrentDirectory();
-                path = Directory.GetParent(path)!.ToString();
-                path = Directory.GetParent(path)!.ToString();
-                path = Directory.GetParent(path)!.ToString();
-                path += "/Output.txt";*/
+            {   
                 File.AppendAllText(outputFile, $"Error: {message}\n");
             }
             catch(Exception ex)
