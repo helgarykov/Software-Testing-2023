@@ -72,20 +72,24 @@ public class CalculatorState
                             calc.first_number += Int32.Parse(key.ToString());
                         }
                     }
+                    else if (key is '+' or '-' or '*' or '/')
+                    {
+                        // Detected an operator; change the phase.
+                        calc.op = key;
+                        calc.currentPhase = CalculatorPhase.WaitingForSecondOperand;
+                        calc.start_new_number = true; // prepare for a new number
+                    }
                     else
                     {
-                        throw new InvalidOperationException("Expected a digit, but was " + key);
-
+                        throw new InvalidOperationException("Expected a digit or operator, but was " + key);
                     }
                 }
                 catch (InvalidOperationException ex)
                 {
                     ErrorMessageWriteToFile(ex.Message, calc.OutputFile);
                     calc.HasErrorOccurred = true; 
-                    return;
+                    
                 }
-
-                calc.currentPhase = CalculatorPhase.WaitingForOperator;
                 break;
 
             case CalculatorPhase.WaitingForOperator:
@@ -116,6 +120,11 @@ public class CalculatorState
                 {
                     if (char.IsDigit(key))
                     {
+                        // TODO : move this check to PerformCalculation. Now one of the tests DivideByZero fails.
+                        // if (key == '0')
+                        // {
+                        //     throw new InvalidOperationException("Cannot divide by zero.");
+                        // }
                         // Process second operand, build up the number
                         if (calc.start_new_number)
                         {
@@ -128,6 +137,12 @@ public class CalculatorState
                             calc.screen += Int32.Parse(key.ToString());
                         }
                     }
+                    else if (key == '=')
+                    {
+                        // Detected an operator; change the phase.
+                        calc.op = key;
+                        calc.currentPhase = CalculatorPhase.WaitingForEqualsOperator;
+                    }
                     else
                     {
                         throw new InvalidOperationException($"Expected a digit, but was " + key);
@@ -137,11 +152,7 @@ public class CalculatorState
                 {
                     ErrorMessageWriteToFile(ex.Message, calc.OutputFile);
                     calc.HasErrorOccurred = true;
-                    return;
                 }
-
-                // Transition to the next phase
-                calc.currentPhase = CalculatorPhase.WaitingForEqualsOperator;
                 break;
 
             case CalculatorPhase.WaitingForEqualsOperator:
@@ -194,21 +205,12 @@ public class CalculatorState
             case '/':
                 try
                 {
-                    // Attempt to divide, which may throw an exception
-                    if (second == 0)
-                    {
-                        throw new InvalidOperationException("Cannot divide by zero.");
-                    }
                     result = first / second;
                 }
-                catch (InvalidOperationException ex)
-                {
-                    ErrorMessageWriteToFile(ex.Message, calc.OutputFile);
-                    throw;  // re-throw the exception
-                }
                 catch (Exception ex)
-                {
+                { 
                     ErrorMessageWriteToFile(ex.Message, calc.OutputFile);    // Optionally re-throw or handle other types of exceptions
+                    calc.HasErrorOccurred = true;
                 }
                 break;
         }
