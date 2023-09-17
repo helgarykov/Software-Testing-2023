@@ -79,7 +79,7 @@ public class CalculatorState
                     }
                     else
                     {
-                        throw new InvalidOperationException("Expected a digit or operator, but was " + key);
+                        throw new InvalidOperationException("Invalid input for 1st operand or the operator.");
                     }
                 }
                 catch (InvalidOperationException ex)
@@ -134,12 +134,16 @@ public class CalculatorState
                     {
                         calc.HasEqualSignBeenPressed = (key == '=');
                         int result = PerformCalculation(calc.first_number, calc.screen, calc.op, calc);
-                        calc.screen = result; 
+                        calc.screen = result;
+                        if (result == -1)
+                        {
+                            break;
+                        }
                         WriteResultToFile(result, calc.OutputFile);
                     }
                     else
                     {
-                        throw new InvalidOperationException($"Expected a digit or +, but was " + key);
+                        throw new InvalidOperationException($"Invalid input: 1st operator or 2nd operator.");
                     }
                 }
                 catch (InvalidOperationException ex)
@@ -175,17 +179,21 @@ public class CalculatorState
                 result = first * second;
                 break;
             case '/':
+                if (second == 0)
+                {
+                    // Log the error and set the flag for error occurrence
+                    ErrorMessageWriteToFile("Cannot divide by zero.", calc.OutputFile);
+                    calc.HasErrorOccurred = true;
+                    return -1;
+                }
                 try
                 {
-                    if (op == '0')
-                    {
-                        throw new InvalidOperationException("Cannot divide by zero.");
-                    }
                     result = first / second;
                 }
                 catch (Exception ex)
-                { 
-                    ErrorMessageWriteToFile(ex.Message, calc.OutputFile);    // Optionally re-throw or handle other types of exceptions
+                {
+                    // Optionally log other types of exceptions
+                    ErrorMessageWriteToFile(ex.Message, calc.OutputFile);
                     calc.HasErrorOccurred = true;
                 }
                 break;
