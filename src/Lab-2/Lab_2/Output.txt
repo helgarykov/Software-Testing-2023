@@ -1,1 +1,1 @@
-Error: Cannot divide by zero.
+Error: Invalid input, equality sign is missing.

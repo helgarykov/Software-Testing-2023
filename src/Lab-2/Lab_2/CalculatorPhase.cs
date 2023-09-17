@@ -12,8 +12,5 @@ public enum CalculatorPhase
     WaitingForOperator,
 
     /// <summary>Waiting for the second operand to be entered.</summary>
-    WaitingForSecondOperand,
-
-    /// <summary>Waiting for the equals operator to execute the calculation.</summary>
-    WaitingForEqualsOperator
+    WaitingForSecondOperand
 }

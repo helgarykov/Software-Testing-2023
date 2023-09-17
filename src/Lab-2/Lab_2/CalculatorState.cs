@@ -26,15 +26,14 @@ public class CalculatorState
     private int first_number;
     private char op;
     private bool start_new_number = true;
-    public bool HasErrorOccurred { get; set; } = false;
-    
+    private bool HasErrorOccurred { get; set; } = false;
+
     /// <remarks>
-    /// This property is used to validate that the calculator reached the final phase of calculation, 
-    /// represented by <see cref="CalculatorPhase.WaitingForEqualsOperator"/>. If the calculator did
-    /// not reach this phase, an error message is written to indicate that the equality symbol '='
+    /// This property is used to validate inputs without the equality symbol '='.
+    /// If that is the case, an error message is written to indicate that the equality symbol '='
     /// is missing in the input.
     /// </remarks>
-    private CalculatorPhase LastPhaseReached { get; set; }
+    private bool HasEqualSignBeenPressed { get; set; } = false;
     private CalculatorPhase currentPhase = CalculatorPhase.WaitingForFirstOperand;
     public string OutputFile { get;}
     public CalculatorState(string outputFile)
@@ -52,7 +51,6 @@ public class CalculatorState
     /// </remarks>
     private static void HandleKeyPress(CalculatorState calc, char key)
     {
-        calc.LastPhaseReached = calc.currentPhase;  // Always update the last phase reached
         switch (calc.currentPhase)
         {
             case CalculatorPhase.WaitingForFirstOperand:
@@ -120,11 +118,6 @@ public class CalculatorState
                 {
                     if (char.IsDigit(key))
                     {
-                        // TODO : move this check to PerformCalculation. Now one of the tests DivideByZero fails.
-                        // if (key == '0')
-                        // {
-                        //     throw new InvalidOperationException("Cannot divide by zero.");
-                        // }
                         // Process second operand, build up the number
                         if (calc.start_new_number)
                         {
@@ -139,41 +132,20 @@ public class CalculatorState
                     }
                     else if (key == '=')
                     {
-                        // Detected an operator; change the phase.
-                        calc.op = key;
-                        calc.currentPhase = CalculatorPhase.WaitingForEqualsOperator;
+                        calc.HasEqualSignBeenPressed = (key == '=');
+                        int result = PerformCalculation(calc.first_number, calc.screen, calc.op, calc);
+                        calc.screen = result; 
+                        WriteResultToFile(result, calc.OutputFile);
                     }
                     else
                     {
-                        throw new InvalidOperationException($"Expected a digit, but was " + key);
+                        throw new InvalidOperationException($"Expected a digit or +, but was " + key);
                     }
                 }
                 catch (InvalidOperationException ex)
                 {
                     ErrorMessageWriteToFile(ex.Message, calc.OutputFile);
                     calc.HasErrorOccurred = true;
-                }
-                break;
-
-            case CalculatorPhase.WaitingForEqualsOperator:
-                try
-                {
-                    if (key == '=')
-                    {
-                        // Perform calculation
-                        int result = PerformCalculation(calc.first_number, calc.screen, calc.op, calc);
-                        calc.screen = result; // store result in screen
-                        WriteResultToFile(result, calc.OutputFile);
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Expected '=', but was " + key);
-                    }
-                }
-                catch (InvalidOperationException ex)
-                {
-                    ErrorMessageWriteToFile(ex.Message, calc.OutputFile);
-                    calc.HasErrorOccurred = true; 
                 }
                 break;
         }
@@ -205,6 +177,10 @@ public class CalculatorState
             case '/':
                 try
                 {
+                    if (op == '0')
+                    {
+                        throw new InvalidOperationException("Cannot divide by zero.");
+                    }
                     result = first / second;
                 }
                 catch (Exception ex)
@@ -242,7 +218,6 @@ public class CalculatorState
     {
         try
         {
-
             for (int i = 0; i < input.Length; i++)
             {
                 string currentString = input[i];
@@ -251,10 +226,12 @@ public class CalculatorState
                     continue; // Skip empty strings
                 }
 
-                // If the current string contains more than one character, it's invalid
+                // If the current string contains more than one character
+                // i.e. digits are not separated by a space, it's a float
+                // or any other input, it's invalid
                 if (currentString.Length > 1)
                 {
-                    ErrorMessageWriteToFile($"Invalid input : {currentString}. Separate digits by a space.", OutputFile);
+                    ErrorMessageWriteToFile($"Invalid input : {currentString}.", OutputFile);
                     return; // Skip to the next iteration of the loop
                 }
 
@@ -264,10 +241,9 @@ public class CalculatorState
                 {
                     return;
                 }
-
             }
             // Check for missing "=" at the end of all inputs
-            if (LastPhaseReached != CalculatorPhase.WaitingForEqualsOperator)
+            if (! this.HasEqualSignBeenPressed)
             {
                 ErrorMessageWriteToFile("Invalid input, equality sign is missing.", OutputFile);
             }
