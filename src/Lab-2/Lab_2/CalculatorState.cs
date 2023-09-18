@@ -162,7 +162,7 @@ public class CalculatorState
     /// <param name="first">The first operand.</param>
     /// <param name="second">The second operand.</param>
     /// <param name="op">The operator to use for the calculation.</param>
-    /// <returns>The result of the calculation.</returns>
+    /// <returns>The result of the calculation or -1 when second = 0.</returns>
     /// <exception cref="InvalidOperationException">Thrown when division by zero is attempted.</exception>
     private static int PerformCalculation(int first, int second, char op, CalculatorState calc)
     {

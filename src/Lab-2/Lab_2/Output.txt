@@ -1,1 +1,1 @@
-2
+Error: Invalid input : 1.2.
