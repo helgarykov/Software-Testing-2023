@@ -27,6 +27,11 @@ public class CalculatorState
     private char op;
     private bool start_new_number = true;
     private bool HasErrorOccurred { get; set; } = false;
+    /// <summary>
+    ///  Flag for checking if the 1st operand has been entered.
+    ///  If it is set to false, throw InvalidOperationException with the error message.
+    /// </summary>
+    private bool IsFirstOperandEntered { get; set; } = false;
 
     /// <remarks>
     /// This property is used to validate inputs without the equality symbol '='.
@@ -69,6 +74,7 @@ public class CalculatorState
                             calc.first_number *= 10;
                             calc.first_number += Int32.Parse(key.ToString());
                         }
+                        calc.IsFirstOperandEntered = true;
                     }
                     else if (key is '+' or '-' or '*' or '/')
                     {
@@ -143,7 +149,7 @@ public class CalculatorState
                     }
                     else
                     {
-                        throw new InvalidOperationException($"Invalid input: 1st operator or 2nd operator.");
+                        throw new InvalidOperationException($"Invalid input: 1st operand or 2nd operand.");
                     }
                 }
                 catch (InvalidOperationException ex)
@@ -166,6 +172,20 @@ public class CalculatorState
     /// <exception cref="InvalidOperationException">Thrown when division by zero is attempted.</exception>
     private static int PerformCalculation(int first, int second, char op, CalculatorState calc)
     {
+        try
+        {
+            if (!calc.IsFirstOperandEntered)
+            {
+                throw new InvalidOperationException($"Invalid input: expected a number, but was {first}.");
+            }
+        }
+        catch (InvalidOperationException ex)
+        {  
+            ErrorMessageWriteToFile(ex.Message, calc.OutputFile);
+            calc.HasErrorOccurred = true;
+            return -1;
+        } 
+        
         int result = 0;
         switch (op)
         {
@@ -198,6 +218,7 @@ public class CalculatorState
                 }
                 break;
         }
+        
         return result;
     }
 
