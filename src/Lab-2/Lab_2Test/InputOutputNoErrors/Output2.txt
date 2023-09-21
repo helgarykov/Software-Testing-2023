@@ -1,1 +1,1 @@
-Error: Invalid input: 1st operator or 2nd operator.
+10

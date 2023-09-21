@@ -1,1 +1,1 @@
-Error: Invalid input : 1.2.
+Error: Invalid input: expected a number, but was 0.

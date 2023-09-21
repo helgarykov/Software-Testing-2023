@@ -1,1 +1,1 @@
-Error: Invalid input: 1st operator or 2nd operator.
+Error: Invalid input: 1st operand or 2nd operand.
