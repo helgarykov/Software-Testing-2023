@@ -62,7 +62,7 @@ public class Board
     }
 
     
-    public List<Cell> GetLandscape(string[] file)
+    public List<Cell> GetLandscapeFromFile(string[] file)
     {
         List<Cell> landscape = new List<Cell>();
         for (int i = 1; i < file.Length; i++)
@@ -94,8 +94,9 @@ public class Board
     {
         foreach (var cell in list)
         {
-            Console.WriteLine($"Cell at coordinates X: {cell.X}, Y: {cell.Y}");
+            Console.Write($"({cell.X}, {cell.Y}) ");
         }
+        Console.WriteLine();
     }
     
 }

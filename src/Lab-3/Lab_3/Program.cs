@@ -8,8 +8,8 @@ filePath += "/Input/Input1.txt";
 
 var lines = File.ReadAllLines(filePath);
 var newBoard = new Board();
-List<Cell> landscape = newBoard.GetLandscape(lines);
-newBoard.PrintFigureOrLandscapeWithCoordinates(landscape);
+List<Cell> lands = newBoard.GetLandscapeFromFile(lines);
+newBoard.PrintFigureOrLandscapeWithCoordinates(lands);
 
 
 
