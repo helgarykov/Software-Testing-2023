@@ -7,7 +7,7 @@ public class Tests
     [Test]
     public void TestGetWidthAndHeightReturnsCorrect()
     {
-        // Set
+        // GIVEN
         Board newBoard = new Board();
         
         string input = 
@@ -21,10 +21,10 @@ public class Tests
             "\n#..#####";
         string[] lines = input.Split("\n");
         
-        // When
+        // WHEN
         newBoard.GetWidthAndHeight(lines);
         
-        // Then
+        // THEN
         Assert.That(newBoard.Width, Is.EqualTo(7), "width is not 7");
         Assert.That(newBoard.Height, Is.EqualTo(8), "height is not 8");
     }
