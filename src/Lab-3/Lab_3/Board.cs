@@ -18,5 +18,14 @@ namespace Lab_3;
 
 public class Board
 {
+    public int Width;
+    public int Height;
+
+    public void GetWidthAndHeight(string[] lines)
+    {
+        string[] dimensions = lines[0].Split(' ');
+        Width = int.Parse(dimensions[0]);  
+        Height = int.Parse(dimensions[1]); 
+    }
     
 }
