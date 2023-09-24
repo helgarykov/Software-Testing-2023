@@ -8,9 +8,8 @@ filePath += "/Input/Input1.txt";
 
 var lines = File.ReadAllLines(filePath);
 var newBoard = new Board();
-newBoard.GetWidthAndHeight(lines);
+List<Cell> landscape = newBoard.GetLandscape(lines);
+newBoard.PrintFigureOrLandscapeWithCoordinates(landscape);
 
-Console.WriteLine("Board Width: " + newBoard.Width);
-Console.WriteLine("Board Height: " + newBoard.Height);
 
 
