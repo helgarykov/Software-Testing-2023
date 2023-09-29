@@ -25,6 +25,7 @@ public class Board
     public int Height;
     private List<Cell> figure;
     private List<Cell> landscape;
+   // private bool figureOrLands;
 
     public void GetWidthAndHeight(string[] file)
     {
@@ -32,62 +33,42 @@ public class Board
         Width = int.Parse(dimensions[0]);  
         Height = int.Parse(dimensions[1]); 
     }
+
+    // 1 = figure; 0 = landscape
+    private List<Cell> GetFigureAndLandscape(string[] file, bool figureOrLands)
+    {
+        List<Cell> result = new List<Cell>();
+        char searchedCharacter;
+        if (figureOrLands)
+        {
+            searchedCharacter = 'p';
+        }
+        else
+        {
+            searchedCharacter = '#';
+        }
+        for (int i = 1; i < file.Length; i++)
+        {
+            string line = file[i];
+            for (int j = 0; j < line.Length; j++)
+            {
+                if (line[j] == searchedCharacter)
+                {
+                    Cell cell = new Cell(i - 1, j);
+                    result.Add(cell);
+                }
+            }
+        } return result;
+    }
     
     public List<Cell> GetFigureFromFile(string[] file)
     {
-        List<Cell> figure = new List<Cell>();
-        for (int i = 1; i < file.Length; i++)
-        {
-            string line = file[i];
-            for (int j = 0; j < line.Length; j++)
-            {
-                if (line[j] == '.' || line[j] == '#')
-                {
-                    continue;
-                }
-
-                if (line[j] == 'p')
-                {
-                    Cell cell = new Cell(i, j);
-                    cell.X = i;
-                    cell.Y = j;
-                    figure.Add(cell);
-                }
-                else
-                {
-                    Console.WriteLine($"Info at line {i + 1}, column {j + 1}: Character is {line[j]}");
-                }
-            }
-        } return figure;
+        return GetFigureAndLandscape(file, true);
     }
-
     
     public List<Cell> GetLandscapeFromFile(string[] file)
     {
-        List<Cell> landscape = new List<Cell>();
-        for (int i = 1; i < file.Length; i++)
-        {
-            string line = file[i];
-            for (int j = 0; j < line.Length; j++)
-            {
-                if (line[j] == '.' || line[j] == 'p')
-                {
-                    continue;
-                }
-
-                if (line[j] == '#')
-                {
-                    Cell cell = new Cell(i, j);
-                    cell.X = i;
-                    cell.Y = j;
-                    landscape.Add(cell);
-                }
-                else
-                {
-                    Console.WriteLine($"Info at line {i + 1}, column {j + 1}: Character is {line[j]}");
-                }
-            }
-        } return landscape;
+        return GetFigureAndLandscape(file, false);
     }
 
     public void PrintFigureOrLandscapeWithCoordinates(List<Cell> list)
@@ -98,6 +79,32 @@ public class Board
         }
         Console.WriteLine();
     }
+
+    public void ProcessFigureOneCycle()
+    {
+        foreach (var cell in figure)
+        {
+            if (!(cell.X+1 < Width && cell.Y+1 < Height))
+            {
+                return;
+            }
+
+            foreach (var cellLandscape in landscape)
+            {
+                if (!(cell.X + 1 < cellLandscape.X && cell.Y + 1 < cellLandscape.Y))
+                {
+                    return;
+                }
+            }
+        }
+
+        foreach (var cell in figure)
+        {
+            cell.X += 1;
+        }
+    }
+    
+    // TODO : delegates, code doubling?
     
 }
 
