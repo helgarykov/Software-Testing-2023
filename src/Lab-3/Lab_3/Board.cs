@@ -19,13 +19,13 @@ namespace Lab_3;
 /// 6. Create a function that returns the "field" in textual form.
 /// 7. Output the result to a file.
 
-public class Board 
+public class giBoard 
 {
     public int Width;
     public int Height;
     private List<Cell> figure;
     private List<Cell> landscape;
-   // private bool figureOrLands;
+   // private bool figureOrLands.
 
     public void GetWidthAndHeight(string[] file)
     {
