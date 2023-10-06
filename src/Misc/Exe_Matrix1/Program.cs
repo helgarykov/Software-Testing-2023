@@ -9,10 +9,10 @@ int[,] matrix = new int[3,4]{  {1,0,0,3},  {0,2,0,0},  {0,1,2,3}   };
 int count;
 int[] zero_counters = new int[matrix.GetLength(0)];
 
-for(int i =0; i<matrix.GetLength(0); i++){
+for(int i = 0; i < matrix.GetLength(0); i++){
     count = 0;
-    for(int j=0;j<matrix.GetLength(1);j++){
-        if (matrix[i,j] == 0){
+    for(int j = 0; j < matrix.GetLength(1); j++){
+        if (matrix[i, j] == 0){
             count++;
             zero_counters[i] = count;
         }
@@ -21,9 +21,9 @@ for(int i =0; i<matrix.GetLength(0); i++){
 }
 int max = zero_counters[0];
 int max_id = 0;
-for(int i = 0;i<zero_counters.GetLength(0);i++){
+for(int i = 0; i < zero_counters.GetLength(0); i++){
 
-    if(zero_counters[i]> max){
+    if(zero_counters[i] > max){
         max = zero_counters[i];
         max_id = i;
     }
@@ -31,10 +31,10 @@ for(int i = 0;i<zero_counters.GetLength(0);i++){
 Console.WriteLine($"max:{max}");
 
 for(int j = 0; j < matrix.GetLength(1); j++){
-    matrix[0,j] = matrix[max_id,j];
+    matrix[0, j] = matrix[max_id, j];
 }
-for(int i =0;i < matrix.GetLength(0);i++){
-    for(int j=0;j < matrix.GetLength(1);j++){
+for(int i = 0; i < matrix.GetLength(0); i++){
+    for(int j = 0; j < matrix.GetLength(1); j++){
         Console.Write(matrix[i,j] + " ");
     }
     Console.WriteLine();
