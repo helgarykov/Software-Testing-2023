@@ -3,6 +3,10 @@
 // Count the total number of zero elements.
 // Take row with the max number of zero elements in the matrix
 // and make it as the 1st row in the matrix.
+//      
+//      1   0   0   3
+//      0   2   0   0
+//      0   1   2   3
 
 // Variant 1
 int[,] matrix = new int[3,4]{  {1,0,0,3},  {0,2,0,0},  {0,1,2,3}   };
