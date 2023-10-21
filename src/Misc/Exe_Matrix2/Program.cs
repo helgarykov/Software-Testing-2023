@@ -1,24 +1,22 @@
 ﻿//Task: See the picture for the task description.
 
-int[,] matrix = new int[5, 5];
-for (int i = 0; i < matrix.GetLength(0); i++)
+var matrix = new int[5, 5];
+for (var i = 0; i < matrix.GetLength(0); i++)
 {
     Console.WriteLine();
-    for (int j = 0; j < matrix.GetLength(1); j++)
+    for (var j = 0; j < matrix.GetLength(1); j++)
     {
         matrix[i, j] = i * 10 + j;
         Console.Write( " " + matrix[i, j]);
     }
 }
 
-Console.WriteLine();
-
 // Filling in the right upper half of the matrix
-for (int i = 0; i < matrix.GetLength(0); i++)
+for (var i = 0; i < matrix.GetLength(0); i++)
 {
     Console.WriteLine();
     // if row nr is even, we move from right to left  
-    if ((i % 2 == 0))       // if (flag)
+    if (i % 2 == 0)       // if (flag)
     {
         for (int j = matrix.GetLength(1) - 1; j > i; j--)
         {
@@ -33,14 +31,15 @@ for (int i = 0; i < matrix.GetLength(0); i++)
         }    
     }
 }
+
 // Filling in the left bottom half of the matrix
-for (int i = 0; i < matrix.GetLength(0); i++)
+for (var i = 0; i < matrix.GetLength(0); i++)
 {
     Console.WriteLine();
     // if row nr is even, we move from right to left  
     if (i % 2 == 0)
     {
-        for (int j = 0; j < i; j++)
+        for (var j = 0; j < i; j++)
         {
             Console.Write( " " + matrix[i, j]);
         }
@@ -53,24 +52,26 @@ for (int i = 0; i < matrix.GetLength(0); i++)
         }    
     }
 }
+Console.WriteLine();
+
 // Filling in the diagonal
-// Var 1
-for (int i = 0; i < matrix.GetLength(0); i++)
+//Var 1: single for-loop
+for (var i = 0; i < matrix.GetLength(0); i++)
 {
-    for (int j = 0; j < matrix.GetLength(1); j++)
+    Console.WriteLine(matrix[i, i]);   
+}
+
+// Var 2
+/*for (var i = 0; i < matrix.GetLength(0); i++)
+{
+    for (var j = 0; j < matrix.GetLength(1); j++)
     {
         if (i == j)
         { 
             Console.WriteLine(" " + matrix[i, j]);
         }
     }
-}
-
-// Var 2: single for-loop
-// for (int i = 0; i < matrix.GetLength(0); i++)
-// {
-//    Console.WriteLine(matrix[i, i]);   
-// }
+}*/
 
 
 /*// Variant 2: Filling in the matrix without checking for whether the row is odd or even.
