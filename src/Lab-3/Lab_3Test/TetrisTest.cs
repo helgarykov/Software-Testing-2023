@@ -125,10 +125,9 @@ public class Tests
         newBoard.ProcessFigureOneCycle();
         
         
-        
         // THEN
         Assert.That(expectedFigure, Is.EqualTo(newBoard.Figure), "figure is not as expected");
     }
-    //TODO: add another test of ProcessFigureOneCycleTest ALSO delegates and stringbuilder
+    //TODO: add another test of ProcessFigureOneCycleTest ALSO delegates and stringBuilder.
     
 }

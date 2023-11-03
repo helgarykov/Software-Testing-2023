@@ -24,13 +24,13 @@ public class Board
 {
     public int Width;
     public int Height;
-    private List<Cell> figure;
+    private List<Cell> _figure;
 
     public List<Cell> Figure
     {
         get{var copy = new List<Cell>();
             
-            foreach (var cell in figure)
+            foreach (var cell in _figure)
             {
                 copy.Add(new Cell(cell)); 
             }
@@ -38,12 +38,12 @@ public class Board
             return copy;
         }
     }
-    private List<Cell> landscape;
+    private List<Cell> _landscape;
     public List<Cell> Landscape
     {
         get{var copy = new List<Cell>();
             
-            foreach (var cell in landscape)
+            foreach (var cell in _landscape)
             {
                 copy.Add(new Cell(cell)); 
             }
@@ -58,16 +58,16 @@ public class Board
    {
        
    }
-   public Board(string[] file_contents)
+   public Board(string[] fileContents)
    {
-       GetLandscapeFromFile(file_contents);
-       GetFigureFromFile(file_contents);
-       GetWidthAndHeight(file_contents);
+       GetLandscapeFromFile(fileContents);
+       GetFigureFromFile(fileContents);
+       GetWidthAndHeight(fileContents);
    }
    public Board(Board otherBoard)
    {
-       figure = Figure;
-       landscape = Landscape;
+       _figure = Figure;
+       _landscape = Landscape;
        Width = otherBoard.Width;
        Height = otherBoard.Height;
        
@@ -76,9 +76,9 @@ public class Board
    {
        if (obj is Board other)
        {
-           for (int i = 0; i < this.figure.Count; i++)
+           for (int i = 0; i < this._figure.Count; i++)
            {
-               if (!(this.figure[i].Equals(other.figure[i])))
+               if (!(this._figure[i].Equals(other._figure[i])))
                {
                    return false;
                }
@@ -123,12 +123,12 @@ public class Board
     
     public void GetFigureFromFile(string[] file)
     {
-        figure = GetFigureAndLandscape(file, true);
+        _figure = GetFigureAndLandscape(file, true);
     }
     
     public void GetLandscapeFromFile(string[] file)
     {
-        landscape = GetFigureAndLandscape(file, false);
+        _landscape = GetFigureAndLandscape(file, false);
     }
 
     public char[,] BoardToText()
@@ -141,10 +141,10 @@ public class Board
             {
                 cell.X = i;
                 cell.Y = j;
-                if (figure.Contains(cell))
+                if (_figure.Contains(cell))
                 {
                     strBoard[i, j] = 'p';
-                }else if(landscape.Contains(cell))
+                }else if(_landscape.Contains(cell))
                 {
                     strBoard[i, j] = '#';
                 }
@@ -200,7 +200,7 @@ public class Board
     
     public void PrintFigure()
     {
-        foreach (var cell in figure)
+        foreach (var cell in _figure)
         {
             Console.Write($"({cell.X}, {cell.Y}) ");
         }
@@ -209,14 +209,14 @@ public class Board
 
     public void ProcessFigureOneCycle()
     {
-        foreach (var cell in figure)
+        foreach (var cell in _figure)
         {
             if (cell.X+1 >= Height)
             {
                 return;
             }
 
-            foreach (var cellLandscape in landscape)
+            foreach (var cellLandscape in _landscape)
             {
                 if (cell.X + 1 >= cellLandscape.X && cell.Y == cellLandscape.Y)
                 {
@@ -225,7 +225,7 @@ public class Board
             }
         }
 
-        foreach (var cell in figure)
+        foreach (var cell in _figure)
         {
             cell.X += 1;
         }
@@ -241,9 +241,6 @@ public class Board
             PrintFigure();
         } while (!(this.Equals(previousState)));
     }
-    
-    
-    // TODO : delegates, code doubling?
     
 }
 
