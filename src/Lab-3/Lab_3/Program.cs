@@ -20,7 +20,7 @@ var newBoard = new Board(lines);
 newBoard.PrintFigure();
 newBoard.ProcessFigureSeveralCycles();
 char[,] BoardTxt = newBoard.BoardToText();
-Board.BoardTxtToConsole(BoardTxt);
+//Board.BoardTxtToConsole(BoardTxt);
 Board.BoardTxtToFile(outputFilePath,BoardTxt);
 //newBoard.PrintFigure();
 

@@ -25,34 +25,52 @@ public class Board
     public int Width;
     public int Height;
     private List<Cell> figure;
+
+    public List<Cell> Figure
+    {
+        get{var copy = new List<Cell>();
+            
+            foreach (var cell in figure)
+            {
+                copy.Add(new Cell(cell)); 
+            }
+
+            return copy;
+        }
+    }
     private List<Cell> landscape;
-   // private bool figureOrLands.
+    public List<Cell> Landscape
+    {
+        get{var copy = new List<Cell>();
+            
+            foreach (var cell in landscape)
+            {
+                copy.Add(new Cell(cell)); 
+            }
+
+            return copy;
+        }
+    }
+   // private bool trueForFigure_or_FalseForLandscape.
 
 
    public Board()
    {
        
    }
-   public Board(string[] lines)
+   public Board(string[] file_contents)
    {
-       GetLandscapeFromFile(lines);
-       GetFigureFromFile(lines);
-       GetWidthAndHeight(lines);
+       GetLandscapeFromFile(file_contents);
+       GetFigureFromFile(file_contents);
+       GetWidthAndHeight(file_contents);
    }
    public Board(Board otherBoard)
    {
-       figure = new List<Cell>();
-       landscape = new List<Cell>();
+       figure = Figure;
+       landscape = Landscape;
        Width = otherBoard.Width;
        Height = otherBoard.Height;
-       foreach (var cell in otherBoard.figure)
-       {
-           this.figure.Add(new Cell(cell)); 
-       }
-       foreach (var cell in otherBoard.landscape)
-       {
-           this.landscape.Add(new Cell(cell)); 
-       }
+       
    }
    public override bool Equals(object? obj)
    {
@@ -76,12 +94,12 @@ public class Board
         Width = int.Parse(dimensions[1]); 
     }
 
-    // 1 = figure; 0 = landscape
-    private List<Cell> GetFigureAndLandscape(string[] file, bool figureOrLands)
+    
+    public List<Cell> GetFigureAndLandscape(string[] file, bool trueForFigureOrFalseForLandscape)
     {
         List<Cell> result = new List<Cell>();
         char searchedCharacter;
-        if (figureOrLands)
+        if (trueForFigureOrFalseForLandscape)
         {
             searchedCharacter = 'p';
         }
@@ -218,7 +236,6 @@ public class Board
         Board previousState;
         do
         {
-            Console.Write("hellou\n");
             previousState = new Board(this);
             ProcessFigureOneCycle();
             PrintFigure();
