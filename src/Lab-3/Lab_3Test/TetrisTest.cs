@@ -126,6 +126,32 @@ public class Tests
         // THEN
         Assert.That(expectedFigure, Is.EqualTo(newBoard.Figure), "figure is not as expected");
     }
+    
+    [Test]
+    public void ProcessFigureOneCycleBlockedTestOne()
+    {
+        // GIVEN
+        const string input = "7 8\n" +
+                             "..p....." +
+                             "\n.ppp...." +
+                             "\n..p#...." +
+                             "\n...#...." +
+                             "\n...#...." +
+                             "\n...#...#" +
+                             "\n#..#####";
+        string[] lines = input.Split("\n");
+        Board newBoard = new Board(lines);
+        
+        List<Cell> expectedFigure = newBoard.GetFigureAndLandscape(lines,true);
+        
+        
+        // WHEN
+        newBoard.ProcessFigureOneCycle();
+        
+        
+        // THEN
+        Assert.That(expectedFigure, Is.EqualTo(newBoard.Figure), "figure is not as expected");
+    }
 
     [Test]
     public void ProcessFigureOneCycleTestTwo()
@@ -152,8 +178,67 @@ public class Tests
         newBoard.ProcessFigureOneCycle();
 
         //THEN
-        Assert.That(expectedFigure, Is.EqualTo(originalFigure), "figure is not as expected");
+        Assert.That(expectedFigure, Is.EqualTo(newBoard.Figure), "figure is not as expected");
 
         //TODO: add another test of ProcessFigureOneCycleTest ALSO delegates and stringBuilder.
+    }
+    
+    [Test]
+    public void ProcessFigureSeveralCyclesBlockedTest()
+    {
+        // GIVEN
+        const string input = "5 6\n" +
+                             "..p..." +
+                             "\n##p.##" +
+                             "\n##pp##" +
+                             "\n###.##" +
+                             "\n##..##";
+
+        string[] lines = input.Split("\n");
+        Board newBoard = new Board(lines);
+
+        List<Cell> expectedFigure = newBoard.GetFigureAndLandscape(lines,true);
+
+        // WHEN
+        newBoard.ProcessFigureSeveralCycles();
+
+        //THEN
+        Assert.That(expectedFigure, Is.EqualTo(newBoard.Figure), "figure is not as expected");
+
+        //TODO: add another test of ProcessFigureOneCycleTest ALSO delegates and stringBuilder.
+    }
+    
+    [Test]
+    public void ProcessFigureSeveralCyclesTest()
+    {
+        // GIVEN
+        const string input = "7 8\n" +
+                             "..p....." +
+                             "\n.ppp...." +
+                             "\n..p....." +
+                             "\n........" +
+                             "\n........" +
+                             "\n...#...#" +
+                             "\n#..#####";
+        string[] lines = input.Split("\n");
+        Board newBoard = new Board(lines);
+        
+        List<Cell> originalFigure = newBoard.GetFigureAndLandscape(lines,true);
+        List<Cell> expectedFigure = originalFigure;
+        for (int i = 0; i < 3; i++)
+        {
+            foreach (var cell in expectedFigure)
+            {
+                cell.X++;
+            }
+            
+        }
+        
+        // WHEN
+        newBoard.ProcessFigureSeveralCycles();
+        
+        
+        // THEN
+        Assert.That(expectedFigure, Is.EqualTo(newBoard.Figure), "figure is not as expected");
     }
 }

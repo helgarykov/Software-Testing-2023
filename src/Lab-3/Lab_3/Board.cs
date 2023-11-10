@@ -28,7 +28,8 @@ public class Board
 
     public List<Cell> Figure
     {
-        get{var copy = new List<Cell>();
+        get{
+            var copy = new List<Cell>();
             
             foreach (var cell in _figure)
             {
@@ -66,8 +67,8 @@ public class Board
    }
    public Board(Board otherBoard)
    {
-       _figure = Figure;
-       _landscape = Landscape;
+       _figure = otherBoard.Figure;
+       _landscape = otherBoard.Landscape;
        Width = otherBoard.Width;
        Height = otherBoard.Height;
        
