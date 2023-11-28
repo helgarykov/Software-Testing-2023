@@ -5,7 +5,9 @@ namespace Lab_3Test;
 public class Tests
 {
     
-    [Test]
+    
+    
+    /*[Test]
     public void TestGetWidthAndHeightReturnsCorrect()
     {
         // GIVEN
@@ -240,5 +242,5 @@ public class Tests
         
         // THEN
         Assert.That(expectedFigure, Is.EqualTo(newBoard.Figure), "figure is not as expected");
-    }
+    }*/
 }

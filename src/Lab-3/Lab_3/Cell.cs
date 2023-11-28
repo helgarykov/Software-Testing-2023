@@ -10,6 +10,12 @@ public class Cell
         X = x;
         Y = y;
     }
+    public Cell( Cell otherCell)
+    {
+        X = otherCell.X;
+        Y = otherCell.Y;
+    }
+    public Cell() {}
     
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
