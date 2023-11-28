@@ -3,6 +3,7 @@ using System.Runtime.Intrinsics.X86;
 using System.Text;
 
 namespace Lab_3;
+
 /// TODO :
 /// The input file contains the initial state of the grid in the game "2048".
 /// In this game, the grid size is 4 by 4 cells. Each cell contains a number that

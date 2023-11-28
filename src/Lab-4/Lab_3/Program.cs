@@ -28,10 +28,10 @@ char[,] GetField(string[] lines)
 char[] GetCommands(string[] lines)
 {
     string[] result = lines[4].Split(' '); 
-    char[] commands = new char[result.GetLength(1)];
+    char[] commands = new char[result.GetLength(0)];
     for (int i = 0; i < commands.Length; i++)
     {
-        if (!(result[i][0] == 'R' || result[i][0] == 'L' || result[i][0] == 'D' || result[i][0] == 'U'))
+        if ((result[i][0] == 'R' || result[i][0] == 'L' || result[i][0] == 'D' || result[i][0] == 'U'))
         {
             commands[i] = result[i][0];
         }
@@ -41,13 +41,74 @@ char[] GetCommands(string[] lines)
     return commands;
 }
 
-GetField(lines);
-GetCommands(lines);
+List<int> GetRow(char[,] field, int numOfRow)
+{
+    List<Int32> row = new List<int>(4);
+    
+    for (int j = 0; j < field.GetLength(1); j++)
+    {
+        row.Add(field[numOfRow, j] - '0');
+    }
+    return row;
+}
+
+List<int> GetColumn(char[,] field, int numOfCol)
+{
+    List<Int32> column = new List<int>(4);
+    
+    for (int j = 0; j < field.GetLength(0); j++)
+    {
+        column.Add(field[j, numOfCol] - '0');
+    }
+    return column;
+}
+
+List<int> GetRowOrColAfterMove(List<int> list, char direction)
+{
+    var result = new List<int>(4);
+    if (direction == 'R' || direction =='D')
+    {
+        for (int i = 0; i < list.Count -1; i++)
+        {
+            if (!(list[i] == list[i + 1])) 
+            {
+                result.Add(list[i]);
+            }
+
+            else
+            {
+                result.Add(list[i] * 2);
+            }
+        }
+        
+        
+    }
+    else if (direction == 'L' || direction == 'U')
+    {
+
+    }
+    else throw new Exception("Invalid literal");
+
+    return result;
+}
 
 
+char[,] field = GetField(lines);
+char[] commands = GetCommands(lines);
+var row = GetRow(field, 3);
+foreach(var number in row){
+    Console.Write($"{number} ");
+}
 
+var column = GetColumn(field, 3);
+foreach(var number in column){
+    Console.WriteLine(number);
+}
 
-
+var rowAfterMove = GetRowOrColAfterMove(row, 'R');
+foreach(var number in rowAfterMove){
+    Console.Write($"{number} ");
+}
 
 
 // var outputFilePath = Directory.GetCurrentDirectory();
