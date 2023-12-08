@@ -4,8 +4,26 @@ namespace Lab_3Test;
 
 public class Tests
 {
-    
-    
+
+
+    [Test]
+    public void TestGetRowOrColAfterMove()
+    {
+        // GIVEN
+        string[] lines = new[]
+        {
+            "0000",
+            "2020",
+            "0000",
+            "0408",
+            "RUR"
+        };
+
+        // WHEN
+        char[,] board = Get
+
+        // THEN
+    }
     
     /*[Test]
     public void TestGetWidthAndHeightReturnsCorrect()

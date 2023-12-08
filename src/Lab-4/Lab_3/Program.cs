@@ -80,14 +80,29 @@ List<int> GetRowOrColAfterMove(List<int> list, char direction)
                 result.Add(list[i] * 2);
             }
         }
-        
-        
     }
     else if (direction == 'L' || direction == 'U')
     {
+        for (int i = list.Count - 1; i >= 0; i--)
+        {
+            if (!(list[i] == list[i - 1])) 
+            {
+                result.Add(list[i]);
+            }
+
+            else
+            {
+                result.Add(list[i] * 2);
+            }
+        }
 
     }
     else throw new Exception("Invalid literal");
+
+    if (result.Count < 4)
+    {
+        
+    }
 
     return result;
 }
