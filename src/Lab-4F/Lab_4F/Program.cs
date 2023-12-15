@@ -12,21 +12,28 @@ var lines = File.ReadAllLines(inputFilePath);
 
 Board board = new Board();
 
+
 char[,] field = Board.GetField(lines);
 char[] commands = Board.GetCommands(lines);
 var row = Board.GetRow(field, 3);
+
+/*
 foreach(var number in row){
     Console.Write($"{number} ");
 }
+Console.WriteLine();
 
+*/
 var column = Board.GetColumn(field, 3);
 foreach(var number in column){
     Console.WriteLine(number);
 }
 
-var rowAfterMove = Board.GetRowOrColAfterMove(row, 'R');
+
+Console.WriteLine();
+var rowAfterMove = Board.GetRowOrColAfterMove(column, 'D');
 foreach(var number in rowAfterMove){
-    Console.Write($"{number} ");
+     Console.Write($"{number} ");
 }
 
 
