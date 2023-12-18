@@ -17,13 +17,13 @@ char[,] field = Board.GetField(lines);
 char[] commands = Board.GetCommands(lines);
 var row = Board.GetRow(field, 3);
 
-/*
+
 foreach(var number in row){
     Console.Write($"{number} ");
 }
 Console.WriteLine();
 
-*/
+
 var column = Board.GetColumn(field, 3);
 foreach(var number in column){
     Console.WriteLine(number);

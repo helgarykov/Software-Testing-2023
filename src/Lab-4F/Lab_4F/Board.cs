@@ -1,9 +1,14 @@
 namespace Lab_4F;
 
+/// <summary>
+/// Note on GetRowOrColAfterMove: если выполняется одинаковое действие многораз,
+/// то нужно делать это через цикл — мы ленимся. В данном сличае, мы итеративно
+/// сравниваем соседей, значит надо двойной форлуп.
+/// </summary>
 public class Board
 {
 
-    static public char[,] GetField(string[] lines)
+    public static char[,] GetField(string[] lines)
     {
         char[,] field = new char[4, 4];
         for (int i = 0; i < 4; i++)
@@ -18,7 +23,7 @@ public class Board
         return field;
     }
 
-    static public char[] GetCommands(string[] lines)
+    public static char[] GetCommands(string[] lines)
     {
         string[] result = lines[4].Split(' ');
         char[] commands = new char[result.GetLength(0)];
@@ -35,7 +40,7 @@ public class Board
         return commands;
     }
 
-    static public List<int> GetRow(char[,] field, int numOfRow)
+    public static List<int> GetRow(char[,] field, int numOfRow)
     {
         List<Int32> row = new List<int>(4);
 
@@ -47,7 +52,7 @@ public class Board
         return row;
     }
 
-    static public List<int> GetColumn(char[,] field, int numOfCol)
+    public static List<int> GetColumn(char[,] field, int numOfCol)
     {
         List<Int32> column = new List<int>(4);
 
@@ -59,7 +64,7 @@ public class Board
         return column;
     }
 
-    static public List<int> GetRowOrColAfterMove(List<int> list, char direction)
+    public static List<int> GetRowOrColAfterMove(List<int> list, char direction)
     {
         var result = new List<int>(4);
 
