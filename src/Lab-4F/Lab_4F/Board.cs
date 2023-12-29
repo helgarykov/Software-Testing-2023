@@ -1,13 +1,15 @@
 namespace Lab_4F;
 
 /// <summary>
-/// Note on GetRowOrColAfterMove: если выполняется одинаковое действие многораз,
+/// Note on GetRowOrColAfterMove: если выполняется одинаковое действие много раз,
 /// то нужно делать это через цикл — мы ленимся. В данном сличае, мы итеративно
 /// сравниваем соседей, значит надо двойной форлуп.
 /// </summary>
+
 public class Board
 {
-
+    public delegate List<int> GetColOrRow(char[,]field, int num);
+    
     public static char[,] GetField(string[] lines)
     {
         char[,] field = new char[4, 4];
@@ -122,8 +124,51 @@ public class Board
         }
 
         return result;
-        }
     }
+    
+    public static char[,] GetNewField(char[,] field, char direction)
+    {
+        GetColOrRow delegateColOrRow;
+        int length;
+
+        if (direction == 'R' || direction == 'L')
+        {
+            delegateColOrRow = GetRow;
+            length = field.GetLength(1);
+        }
+        else
+        {   
+            delegateColOrRow = GetColumn;
+            length = field.GetLength(0);
+        }
+        List<int>[] colsRows = new List<int>[4];
+        for (int i = 0; i < length; i++)
+        {
+            colsRows[i] = delegateColOrRow(field, i);
+        }
+        for(int i = 0; i < length; i++)
+        {
+            var newRowCol = GetRowOrColAfterMove(colsRows[i], direction);
+            colsRows[i] = newRowCol;
+        }
+        return TransformFromListToMatrix(colsRows);
+        
+    }
+
+    public static char[,] TransformFromListToMatrix(List<int>[] listOfLists)
+    {
+        char[,] result = new char[4, 4];
+        for (int i = 0; i < listOfLists.GetLength(0); i++)
+        {
+            for (int j = 0; j < listOfLists[i].Count; j++)
+            {
+                result[i, j] = (char)(listOfLists[i][j] + '0');
+            }
+        }
+        return result;
+    }
+
+}
 
 
 
