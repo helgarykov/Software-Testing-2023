@@ -1,5 +1,6 @@
 ﻿
 
+using System.Numerics;
 using Lab_4F;
 
 var inputFilePath = Directory.GetCurrentDirectory();
@@ -18,7 +19,7 @@ char[] commands = Board.GetCommands(lines);
 var row = Board.GetRow(field, 3);
 
 
-foreach(var number in row){
+/*foreach(var number in row){
     Console.Write($"{number} ");
 }
 Console.WriteLine();
@@ -34,6 +35,9 @@ Console.WriteLine();
 var rowAfterMove = Board.GetRowOrColAfterMove(column, 'D');
 foreach(var number in rowAfterMove){
      Console.Write($"{number} ");
-}
+}*/
 
+Console.WriteLine();
+var matrixAfterMove = Board.GetNewField(field, 'R');
+Board.PrintField(matrixAfterMove);
 

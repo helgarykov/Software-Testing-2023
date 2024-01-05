@@ -82,6 +82,11 @@ public class Board
                         list[j] = 0;
                         break;
                     }
+                    else if (j == list.Count-1 && list[j] == 0)
+                    {
+                        result.Add(list[i]);
+                        break;
+                    }
                     else if (list[j] == 0)
                     {
                         continue;
@@ -166,6 +171,18 @@ public class Board
             }
         }
         return result;
+    }
+
+    public static void PrintField(char[,] field)
+    {
+        for (int i = 0; i < field.GetLength(1); i++)
+        {
+            for (int j = 0; j < field.GetLength(0); j++)
+            {
+                Console.Write(field[i,j]);
+            }
+            Console.WriteLine();
+        }
     }
 
 }
